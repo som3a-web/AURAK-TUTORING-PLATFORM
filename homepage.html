@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official AURAK Peer Tutoring Platform | American University of Ras Al Khaimah</title>
+    <meta name="description" content="Official peer tutoring platform of American University of Ras Al Khaimah. Connect with faculty-recommended tutors for academic success.">
+    <meta name="keywords" content="AURAK, peer tutoring, academic support, tutoring services, American University of Ras Al Khaimah">
+    <link rel="icon" type="image/png" href="image.html/image6-adjusted.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Core Palette */
+            --primary-red: #C8102E; /* AURAK Red */
+            --accent-yellow: #FFC72C; /* AURAK Yellow */
+            --primary-blue: #0044a0; /* Keeping blue for secondary accents */
+            --white: #FFFFFF;
+            --light-gray: #f5f5f7;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --text-dark: #212121;
+            /* Design Elements */
+            --shadow: 0 6px 16px rgba(0,0,0,0.08); /* Softer shadow */
+            --shadow-hover: 0 10px 20px rgba(0,0,0,0.12); /* Softer hover shadow */
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+        
+        /* Utility */
+        .hidden { display: none !important; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--white);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles - Fixed with Home Button */
+        header {
+            background-color: var(--primary-red);
+            color: var(--white);
+            padding: 16px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            padding: 10px 0;
+            background-color: rgba(200, 16, 46, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+            padding: 1px;
+            transition: var(--transition);
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: auto;
+            filter: contrast(1.15) brightness(1.03) saturate(1.05) drop-shadow(0 0 0.5px rgba(0,0,0,0.1));
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transform: scale(1) translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            outline: none;
+            border: none;
+            -webkit-filter: contrast(1.15) brightness(1.03) saturate(1.05);
+            -ms-filter: contrast(1.15) brightness(1.03) saturate(1.05);
+        }
+
+        .logo-container:hover .logo-img {
+            transform: rotate(10deg);
+            box-shadow: 0 0 10px rgba(255, 199, 44, 0.5);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #C8102E, #FFC72C, #C8102E);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: var(--transition);
+            padding: 8px 0;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent-yellow);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .signin-btn {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .signin-btn:hover::before {
+            left: 100%;
+        }
+
+        .signin-btn:hover {
+            background-color: #e6b325;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Banner Carousel - Enhanced */
+        .banner-carousel {
+            margin-top: 82px;
+            position: relative;
+            height: 600px;
+            overflow: hidden;
+        }
+
+        .carousel-slides {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.8s ease;
+        }
+
+        .carousel-slide {
+            width: 25%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Unified Dark Overlay for all slides */
+        .carousel-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .slide-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.8s ease, opacity 0.8s ease;
+        }
+
+        .carousel-slide.active .slide-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .slide-content h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .slide-content p {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Primary Button: AURAK Yellow */
+        .btn-primary {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #e6b325;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Secondary Button: White with Red Text */
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary-red);
+            border: 2px solid var(--primary-red);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--light-gray);
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+            transform: translateY(-2px);
+        }
+
+        /* Image paths updated to include the subfolder */
+        .slide-1 {
+            background: url('image.html/image1.png') center/cover no-repeat;
+            background-size: cover;
+        }
+
+        .slide-2 {
+            background: url('image.html/image2.png') center/cover no-repeat;
+            background-size: cover;
+        }
+
+        .slide-3 {
+            background: url('image.html/image3.png') center/cover no-repeat;
+            background-size: cover;
+        }
+
+        .slide-4 {
+            background: url('image.html/image4.png') center/cover no-repeat;
+            background-size: cover;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .indicator.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 3;
+            transform: translateY(-50%);
+        }
+
+        .carousel-control {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 20px;
+        }
+
+        .carousel-control:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* --- MODAL STYLES (UNIFIED & ACCESSIBLE) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 95%;
+            max-width: 700px;
+            max-height: 95vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--dark-gray);
+            transition: var(--transition);
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: var(--primary-red);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-red); 
+            box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .submit-btn-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            background-color: #a00d24;
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: #a00d24;
+            transform: none;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* End of core form styles */
+
+        /* Modal Content Specific Styles */
+        .modal-body-placeholder h4 {
+            color: var(--primary-red);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            border-bottom: 1px dashed var(--light-gray);
+            padding-bottom: 5px;
+        }
+        .modal-body-placeholder p {
+            line-height: 1.5;
+            color: var(--text-dark);
+        }
+
+        /* Success Toast Notification Style */
+        #toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            z-index: 10002;
+            font-weight: 600;
+        }
+
+        #toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* End of MODAL/TOAST styles */
+
+        /* Stats Section - Enhanced */
+        .stats {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #e8e8e8 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), var(--accent-yellow));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-number {
+            font-size: 64px;
+            font-weight: 800;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+
+        .stat-description {
+            font-size: 16px;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        /* Help Section - Enhanced */
+        .help-section {
+            padding: 100px 0;
+            background-color: white;
+            position: relative;
+        }
+
+        .help-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0,0 L1000,0 L1000,100 L0,100 Z" fill="%23f5f5f7"/></svg>');
+            background-size: 100% 100%;
+            z-index: -1;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 16px;
+        }
+
+        .section-title p {
+            font-size: 18px;
+            color: var(--dark-gray);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .help-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .help-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--dark-gray);
+        }
+
+        .highlight-box {
+            background-color: var(--light-gray);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--primary-red);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(200, 16, 46, 0.05) 0%, rgba(255, 199, 44, 0.05) 100%);
+            z-index: 0;
+        }
+
+        .highlight-box:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .highlight-box h3 {
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            font-size: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .highlight-box p {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tutors Section - Enhanced with Updated Names */
+        .tutors-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #e8e8e8 100%);
+        }
+
+        .tutors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .tutor-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tutor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red), var(--accent-yellow));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tutor-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tutor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tutor-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tutor-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-right: 20px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .tutor-card:hover .tutor-avatar {
+            transform: scale(1.05);
+        }
+
+        .tutor-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tutor-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .tutor-major {
+            font-size: 16px;
+            color: var(--dark-gray);
+            line-height: 1.2;
+        }
+
+        .tutor-bio {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--dark-gray);
+        }
+
+        .tutor-courses {
+            margin-bottom: 20px;
+        }
+
+        .courses-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-red);
+        }
+
+        .courses-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .course-tag {
+            background-color: var(--primary-red);
+            color: var(--white);
+            padding: 6px 14px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .course-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .contact-btn {
+            display: inline-block;
+            background-color: var(--primary-red);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .contact-btn:hover::before {
+            left: 100%;
+        }
+
+        .contact-btn:hover {
+            background-color: #a00d24;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Quick Links Section - Enhanced */
+        .quick-links {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .link-card {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            transition: var(--transition);
+            border-left: 5px solid var(--accent-yellow);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 199, 44, 0.05) 0%, rgba(200, 16, 46, 0.05) 100%);
+            z-index: 0;
+        }
+
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .link-card h3 {
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            font-size: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-list {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .link-list li {
+            margin-bottom: 12px;
+        }
+
+        .link-list a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .link-list a:hover {
+            color: var(--primary-red);
+            transform: translateX(5px);
+        }
+
+        .link-list a i {
+            margin-right: 10px;
+            color: var(--primary-red);
+            transition: var(--transition);
+        }
+
+        .link-list a:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-red);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-column h3 i {
+            color: var(--accent-yellow);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-yellow);
+            transform: translateX(3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 100px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background-color: #a00d24;
+            transform: translateY(-3px);
+        }
+
+        /* AI Chatbot Widget */
+        .chatbot-wrapper {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .chatbot-toggle {
+            background: linear-gradient(135deg, var(--primary-blue), #0b67d1);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 20px;
+            font-weight: 600;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .chatbot-toggle i {
+            color: var(--accent-yellow);
+        }
+
+        .chatbot-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .chatbot-window {
+            width: 360px;
+            max-height: 520px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(12,55,102,0.25);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            border: 1px solid rgba(4, 37, 84, 0.08);
+        }
+
+        .chatbot-window.open {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: white;
+            padding: 18px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .chatbot-header h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .chatbot-subtitle {
+            font-size: 13px;
+            color: var(--dark-gray);
+            margin-top: 2px;
+        }
+
+        .chatbot-close {
+            background: transparent;
+            border: none;
+            color: var(--dark-gray);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chatbot-date {
+            text-align: center;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--dark-gray);
+            background: #f8f8f8;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 18px;
+            overflow-y: auto;
+            background: #f8fbff;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-message {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 92%;
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, var(--primary-blue), #0b67d1);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .chat-message.bot {
+            background: white;
+            color: var(--text-dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .chat-message.bot strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--primary-blue);
+        }
+
+        .chat-message.bot ol {
+            margin: 8px 0 8px 18px;
+        }
+
+        .chatbot-meta {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .chatbot-actions {
+            padding: 14px 18px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chatbot-action-btn {
+            flex: 1 1 45%;
+            min-width: 130px;
+            border: 1px solid rgba(11,103,209,0.15);
+            border-radius: 999px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            background: rgba(11,103,209,0.08);
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .chatbot-action-btn:hover {
+            background: rgba(11,103,209,0.15);
+        }
+
+        .chatbot-form {
+            padding: 14px 16px 18px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-form input {
+            flex: 1;
+            border: 1px solid var(--medium-gray);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .chatbot-form button {
+            border: none;
+            background: var(--primary-red);
+            color: white;
+            padding: 0 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 20px;
+            }
+            
+            .banner-carousel {
+                height: 500px;
+            }
+            
+            .slide-content h1 {
+                font-size: 36px;
+            }
+            
+            .slide-content p {
+                font-size: 18px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            
+            .help-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .carousel-controls {
+                display: none;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+            
+            .stats, .help-section, .tutors-section, .quick-links {
+                padding: 60px 0;
+            }
+
+            .stat-number {
+                font-size: 50px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .logo-container {
+                justify-content: center;
+            }
+            
+            .banner-carousel {
+                height: 450px;
+                margin-top: 130px;
+            }
+            
+            .slide-content h1 {
+                font-size: 28px;
+            }
+            
+            .tutor-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tutor-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container" onclick="window.location.href='homepage.html'">
+                    <div class="logo-img">
+                        <img src="image.html/image6-adjusted.png" alt="AURAK official logo">
+                    </div>
+                    <div class="logo-text">AURAK Tutoring Platform</div>
+                </div>
+                <nav class="nav-links">
+                    <a href="homepage.html">Home</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="aboutus.html">About Us</a>  
+                    <a href="login.html?mode=register">Sign Up</a>
+                    <button class="signin-btn" onclick="window.location.href='login.html'">Sign In</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="banner-carousel">
+        <div class="carousel-slides">
+            <div class="carousel-slide slide-1 active" data-header-color="#C8102E">
+                <div class="slide-content">
+                    <h1>Official AURAK Peer Tutoring Platform</h1>
+                    <p>Empowering academic excellence through peer-to-peer learning at American University of Ras Al Khaimah</p>
+                    <div class="cta-buttons">
+                        <a href="login.html" class="btn btn-primary">Get Started</a>
+                        <a href="aboutus.html" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-slide slide-2" data-header-color="#C8102E">
+                <div class="slide-content">
+                    <h1>Faculty-Recommended Peer Tutors</h1>
+                    <p>Connect with top-performing students endorsed by AURAK faculty for proven academic support</p>
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary open-modal-link" data-modal-id="tutor-request">Find a Tutor</a>
+                        <a href="aboutus.html" class="btn btn-secondary">View Success Stories</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-slide slide-3" data-header-color="#C8102E">
+                <div class="slide-content">
+                    <h1>Flexible & Convenient Scheduling</h1>
+                    <p>Book personalized tutoring sessions at your convenience through our official AURAK platform</p>
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary open-modal-link" data-modal-id="schedule-session">Schedule a Session</a>
+                        <a href="aboutus.html" class="btn btn-secondary">Learn About Benefits</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-slide slide-4" data-header-color="#C8102E">
+                <div class="slide-content">
+                    <h1>Become an AURAK Peer Tutor</h1>
+                    <p>Join our community of academic leaders and help fellow students while building valuable teaching experience</p>
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary open-modal-link" data-modal-id="tutor-application">Apply as Tutor</a>
+                        <a href="aboutus.html" class="btn btn-secondary">Learn About Benefits</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="carousel-indicators">
+            <div class="indicator active" data-slide="0"></div>
+            <div class="indicator" data-slide="1"></div>
+            <div class="indicator" data-slide="2"></div>
+            <div class="indicator" data-slide="3"></div>
+        </div>
+        
+        <div class="carousel-controls">
+            <button class="carousel-control prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-control next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="2500">0</div>
+                    <div class="stat-description">AURAK students using our platform</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="94">0</div>
+                    <div class="stat-description">of students improved their grades</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="150">0</div>
+                    <div class="stat-description">qualified peer tutors available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-description">courses supported with tutoring</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="help-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Do you need help understanding your course?</h2>
+            </div>
+            <div class="help-content">
+                <div class="help-text">
+                    <p>The AURAK Peer Tutoring program gives you an opportunity to get help from fellow students and ask questions related to course material. Our peer tutors are AURAK students just like you, who excelled in their courses and are recommended by faculty. They will guide, encourage, and support you in your learning process.</p>
+                    <br>
+                    <p><strong>Peer Tutoring service is FREE to all AURAK students!</strong></p>
+                </div>
+                <div class="highlight-box">
+                    <h3>How It Works</h3>
+                    <p>1. Create your account using your AURAK email</p>
+                    <p>2. Browse available tutors for your courses</p>
+                    <p>3. Schedule a session at your convenience</p>
+                    <p>4. Connect with your tutor and get the help you need</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tutors-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Meet Our Current Peer Tutors</h2>
+                <p>Our tutors are AURAK students who excelled in their courses and are ready to help you succeed</p>
+            </div>
+            <div class="tutors-grid">
+                <div class="tutor-card">
+                    <div class="tutor-header">
+                        <div class="tutor-avatar">IA</div>
+                        <div class="tutor-info">
+                            <div class="tutor-name">Ismaail Allaham</div>
+                            <div class="tutor-major">Computer Science, 2nd Year</div>
+                        </div>
+                    </div>
+                    <div class="tutor-bio">
+                        I'm a second-year computer science student, majoring in big data. Feel free to approach me for the majority of the CS subjects.
+                    </div>
+                    <div class="tutor-courses">
+                        <div class="courses-title">Courses I can help with:</div>
+                        <div class="courses-list">
+                            <span class="course-tag">CSIT111</span>
+                            <span class="course-tag">CSIT127</span>
+                            <span class="course-tag">MATH255</span>
+                        </div>
+                    </div>
+                    <a href="mailto:ismail.allaham@aurak.ac.ae" class="contact-btn">CONTACT ME</a>
+                </div>
+                
+                <div class="tutor-card">
+                    <div class="tutor-header">
+                        <div class="tutor-avatar">AG</div>
+                        <div class="tutor-info">
+                            <div class="tutor-name">Ali el Ghawish</div>
+                            <div class="tutor-major">Accounting, 2nd Year</div>
+                        </div>
+                    </div>
+                    <div class="tutor-bio">
+                        Hello I am a 2nd year accounting major, whether it may be calculations or tables that are confusing! I am here to help you navigate through!
+                    </div>
+                    <div class="tutor-courses">
+                        <div class="courses-title">Courses I can help with:</div>
+                        <div class="courses-list">
+                            <span class="course-tag">ACCY121</span>
+                            <span class="course-tag">ACCY122</span>
+                            <span class="course-tag">BUS121</span>
+                            <span class="course-tag">FIN111</span>
+                        </div>
+                    </div>
+                    <a href="mailto:ali.ghawish@aurak.ac.ae" class="contact-btn">CONTACT ME</a>
+                </div>
+                
+                <div class="tutor-card">
+                    <div class="tutor-header">
+                        <div class="tutor-avatar">M</div>
+                        <div class="tutor-info">
+                            <div class="tutor-name">Musa</div>
+                            <div class="tutor-major">Accounting, 1st Year</div>
+                        </div>
+                    </div>
+                    <div class="tutor-bio">
+                        First-year Accounting student who enjoys learning and supporting others with their studies. Happy to help you understand tough topics and do your best!
+                    </div>
+                    <div class="tutor-courses">
+                        <div class="courses-title">Courses I can help with:</div>
+                        <div class="courses-list">
+                            <span class="course-tag">ACCY121</span>
+                            <span class="course-tag">ACCY122</span>
+                            <span class="course-tag">BUS121</span>
+                        </div>
+                    </div>
+                    <a href="mailto:musa@aurak.ac.ae" class="contact-btn">CONTACT ME</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-links">
+        <div class="container">
+            <div class="section-title">
+                <h2>Quick Links</h2>
+                <p>Access important resources and forms</p>
+            </div>
+            <div class="links-grid">
+                <div class="link-card">
+                    <h3>For Students</h3>
+                    <ul class="link-list">
+                        <li><a href="#" class="open-modal-link" data-modal-id="tutor-request"><i class="fas fa-user-plus"></i> Peer Tutor Request</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="available-subjects"><i class="fas fa-list"></i> List of Available Subjects</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="schedule-session"><i class="fas fa-calendar"></i> Schedule a Session</a></li>
+                    </ul>
+                </div>
+                <div class="link-card">
+                    <h3>For Tutors</h3>
+                    <ul class="link-list">
+                        <li><a href="#" class="open-modal-link" data-modal-id="tutor-application"><i class="fas fa-file-alt"></i> Peer Tutor Application</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="handbook-view"><i class="fas fa-book"></i> Tutoring Handbook</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="record-sheet"><i class="fas fa-clipboard-list"></i> Tutorial Record Sheet</a></li>
+                    </ul>
+                </div>
+                <div class="link-card">
+                    <h3>Resources</h3>
+                    <ul class="link-list">
+                        <li><a href="#" class="open-modal-link" data-modal-id="study-resources"><i class="fas fa-download"></i> Study Resources</a></li>
+                        <li><a href="https://aurak.ac.ae/life-at-aurak/faq" target="_blank" rel="noopener">
+                            <i class="fas fa-question-circle"></i> Frequently Asked Questions</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="contact-support">
+                            <i class="fas fa-envelope"></i> Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3><i class="fas fa-university"></i> AURAK Tutoring</h3>
+                    <p style="color: rgba(255,255,255,0.9); margin-bottom: 15px; line-height: 1.6;">
+                        Official Peer Tutoring Platform of American University of Ras Al Khaimah
+                    </p>
+                    <ul class="footer-links">
+                        <li><a href="homepage.html"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="aboutus.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                        <li><a href="login.html?mode=register"><i class="fas fa-user-plus"></i> Sign Up</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="fas fa-book"></i> Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="open-modal-link" data-modal-id="tutor-guidelines"><i class="fas fa-clipboard-list"></i> Tutor Guidelines</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="student-resources"><i class="fas fa-graduation-cap"></i> Student Resources</a></li>
+                        <li><a href="https://aurak.ac.ae/life-at-aurak/faq" target="_blank" rel="noopener"><i class="fas fa-question-circle"></i> Frequently Asked Questions</a></li>
+                        <li><a href="#" class="open-modal-link" data-modal-id="contact-support"><i class="fas fa-headset"></i> Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="fas fa-share-alt"></i> Connect With AURAK</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.instagram.com/aurak_official/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="https://twitter.com/AURAK_Official" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i> X (Twitter)</a></li>
+                        <li><a href="https://www.facebook.com/AURAK.Official" target="_blank" rel="noopener"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="https://www.linkedin.com/school/aurak/" target="_blank" rel="noopener"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="https://aurak.ac.ae" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Official AURAK Website</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="fas fa-map-marker-alt"></i> Contact Information</h3>
+                    <ul class="footer-links" style="list-style: none;">
+                        <li style="margin-bottom: 12px;">
+                            <i class="fas fa-university" style="margin-right: 8px;"></i>
+                            <strong>American University of Ras Al Khaimah</strong>
+                        </li>
+                        <li style="margin-bottom: 12px;">
+                            <i class="fas fa-phone" style="margin-right: 8px;"></i>
+                            <a href="tel:+97172210900" style="color: rgba(255,255,255,0.9);">+971 7 221 0900</a>
+                        </li>
+                        <li style="margin-bottom: 12px;">
+                            <i class="fas fa-envelope" style="margin-right: 8px;"></i>
+                            <a href="mailto:tutoring@aurak.ac.ae" style="color: rgba(255,255,255,0.9);">tutoring@aurak.ac.ae</a>
+                        </li>
+                        <li style="margin-bottom: 12px;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 8px;"></i>
+                            <span>Ras Al Khaimah, United Arab Emirates</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p style="margin-bottom: 10px;">
+                    <strong>© 2025 American University of Ras Al Khaimah (AURAK)</strong> | All rights reserved.
+                </p>
+                <p style="font-size: 12px; opacity: 0.8;">
+                    This is the official peer tutoring platform of AURAK. For official university information, visit 
+                    <a href="https://aurak.ac.ae" target="_blank" rel="noopener" style="color: var(--accent-yellow); text-decoration: underline;">aurak.ac.ae</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <div class="chatbot-wrapper" aria-live="polite">
+        <div class="chatbot-window" id="chatbotWindow" aria-label="AI student helper" role="dialog">
+            <div class="chatbot-header">
+                <div>
+                    <h4>Ismaail AI</h4>
+                    <p class="chatbot-subtitle">Hi, this is Ismaail. How can I help you today?</p>
+                </div>
+                <button class="chatbot-close" id="chatbotClose" aria-label="Close chat">&times;</button>
+            </div>
+            <div class="chatbot-date" id="chatbotDate">Thursday 20, November</div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-message bot">
+                    <strong>Welcome to the Peer Tutoring Center!</strong>
+                    Hi, this is Ismaail. Ask anything about logging in, requesting tutors, or managing sessions.
+                </div>
+            </div>
+            <div class="chatbot-actions" id="chatbotActions"></div>
+            <form class="chatbot-form" id="chatbotForm">
+                <label class="hidden" for="chatbotInput">Ask the AI helper</label>
+                <input type="text" id="chatbotInput" autocomplete="off" placeholder="Ask how to log in, register, schedule..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+        <button class="chatbot-toggle" id="chatbotToggle" aria-label="Open AI helper">
+            <i class="fas fa-comments"></i> Chat with Tutor AI
+        </button>
+    </div>
+
+    <div class="modal" id="unified-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content" tabindex="-1">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Modal Title</h2>
+                <button class="close-modal" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body-placeholder" id="modal-content-container">
+                <p>Loading content...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast-notification" role="alert" aria-live="assertive">
+        Action completed successfully!
+    </div>
+
+    <script>
+        // Global variables for the PHP path and course options
+        const BASE_API_URL = '/SE.PROJECT/api';
+        const COURSE_OPTIONS = `
+            <option value="">Select course...</option>
+            <option value="CSIT111">CSIT111 - Intro to Programming</option>
+            <option value="MATH255">MATH255 - Calculus II</option>
+            <option value="ACCY121">ACCY121 - Financial Accounting</option>
+        `;
+
+        // --- PUBLIC REQUEST FORM SUBMISSION HANDLER ---
+        async function handlePublicTutorRequestSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = form.querySelector('.submit-btn');
+            const spinner = form.querySelector('#submit-btn-spinner');
+            const originalText = submitBtn.querySelector('span').textContent;
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.querySelector('span').textContent = 'Sending...';
+            spinner.style.display = 'inline-block';
+            
+            const requestData = {
+                student_name: document.getElementById('std-name').value,
+                student_email: document.getElementById('std-email').value, 
+                course_code: document.getElementById('course-req').value,
+                topic_details: document.getElementById('topic-req').value,
+            };
+
+            try {
+                const response = await fetch(`${BASE_API_URL}/requests/submit_public_request.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(data.message);
+                    closeModal(document.getElementById('unified-modal'));
+                    form.reset();
+                } else {
+                    showToast('Request failed: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showToast('A network error occurred. Check PHP endpoint.', 'error');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.querySelector('span').textContent = originalText;
+                spinner.style.display = 'none';
+            }
+        }
+        
+        // Function to show toast notification (redefined for clarity)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            if (toast) {
+                toast.textContent = message;
+                toast.style.backgroundColor = (type === 'error' ? '#C8102E' : '#0044a0');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 4000);
+            }
+        }
+        
+        // Function to close the modal
+        function closeModal(modalElement) {
+            modalElement.classList.remove('active');
+            document.body.style.overflow = ''; // Restore background scrolling
+        }
+
+        // --- AI CHATBOT LOGIC ---
+        const BOT_RESPONSES = [
+            {
+                id: 'login',
+                keywords: ['login', 'log in', 'sign in'],
+                title: 'Steps to log in',
+                description: 'Use your official AURAK credentials to access the dashboard.',
+                steps: [
+                    "Click the 'Sign In' button in the top-right corner.",
+                    'Enter your AURAK email + password.',
+                    'Tap Login to go to your Student Dashboard.'
+                ],
+                tip: 'Forgot your password? Use the reset link on the login page.',
+                cta: { label: 'Open login page', href: 'login.html' }
+            },
+            {
+                id: 'register',
+                keywords: ['register', 'sign up', 'create account'],
+                title: 'Create a tutoring account',
+                description: 'Registration is required before you can request or schedule sessions.',
+                steps: [
+                    "Select 'Sign Up' from the navigation bar.",
+                    'Fill in your AURAK student details and preferred password.',
+                    'Verify your email, then log in to activate your profile.'
+                ],
+                tip: 'Use your official student email to avoid delays.',
+                cta: { label: 'Go to Sign Up', href: 'login.html?mode=register' }
+            },
+            {
+                id: 'schedule',
+                keywords: ['schedule', 'book', 'session', 'appointment'],
+                title: 'Book a tutoring session',
+                description: 'Scheduling is done inside your dashboard once you are logged in.',
+                steps: [
+                    'Open the Student Dashboard > Scheduling.',
+                    'Pick the course + tutor + preferred slot.',
+                    'Confirm the booking and check Upcoming Sessions for details.'
+                ],
+                tip: 'Bookings must be made at least 3 hours before the session.',
+                cta: { label: 'View dashboard', href: 'dashboard.html#schedule' }
+            },
+            {
+                id: 'apply',
+                keywords: ['apply', 'become', 'tutor'],
+                title: 'Become a peer tutor',
+                description: 'High-performing students can help others and earn experience.',
+                steps: [
+                    'Log in and open “Apply as Tutor” from the homepage carousel.',
+                    'Complete the form with GPA, courses, and faculty reference.',
+                    'Our admin team reviews and emails you the result.'
+                ],
+                tip: 'Keep unofficial transcripts ready for quick approval.',
+                cta: { label: 'Apply as tutor', href: 'login.html?mode=tutor' }
+            },
+            {
+                id: 'support',
+                keywords: ['contact', 'support', 'help', 'issue'],
+                title: 'Need help right now?',
+                description: 'The tutoring desk can assist with technical issues or scheduling questions.',
+                steps: [
+                    'Email tutoring@aurak.ac.ae with your student ID.',
+                    'Use Quick Links > Contact Support to send a ticket.',
+                    'Or speak to the Student Success Center on campus.'
+                ],
+                tip: 'Share screenshots or error messages to speed things up.'
+            }
+        ];
+
+        const CHAT_ACTIONS = [
+            { label: 'Get login help', question: 'How do I log in?' },
+            { label: 'Register my account', question: 'How do I register as a new student?' },
+            { label: 'Schedule tutoring', question: 'How do I schedule a tutoring session?' },
+            { label: 'Become a tutor', question: 'How do I apply to become a tutor?' },
+            { label: 'Contact support', question: 'How can I contact support?' },
+            { label: 'Something else', question: 'I need help with something else.' }
+        ];
+
+        function getBotResponse(message) {
+            const normalized = message.toLowerCase();
+
+            for (const response of BOT_RESPONSES) {
+                if (response.keywords.some(keyword => normalized.includes(keyword))) {
+                    return formatBotResponse(response);
+                }
+            }
+
+            if (normalized.includes('hello') || normalized.includes('hi')) {
+                return formatSimpleResponse('Hey there! Ask me about logging in, registering, scheduling, or contacting support.');
+            }
+
+            return formatSimpleResponse(`I didn't find an exact answer. Try one of the quick topics below or open the FAQ from Quick Links.`);
+        }
+
+        function formatBotResponse(config) {
+            const stepsHTML = config.steps
+                ? `<ol>${config.steps.map(step => `<li>${step}</li>`).join('')}</ol>`
+                : '';
+            const ctaHTML = config.cta
+                ? `<a href="${config.cta.href}" class="contact-btn" style="display:inline-block;margin-top:8px;" target="_self">${config.cta.label}</a>`
+                : '';
+
+            return `
+                <strong>${config.title}</strong>
+                <p>${config.description}</p>
+                ${stepsHTML}
+                <span class="chatbot-meta">${config.tip || ''}</span>
+                ${ctaHTML}
+            `;
+        }
+
+        function formatSimpleResponse(text) {
+            return `<p>${text}</p>`;
+        }
+
+        function appendChatMessage(text, role = 'bot', options = {}) {
+            const container = document.getElementById('chatbotMessages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `chat-message ${role}`;
+            if (options.asHTML) {
+                messageEl.innerHTML = text;
+            } else {
+                messageEl.textContent = text;
+            }
+            container.appendChild(messageEl);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleChatSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('chatbotInput');
+            const question = input.value.trim();
+            if (!question) return;
+
+            appendChatMessage(question, 'user');
+
+            setTimeout(() => {
+                const answer = getBotResponse(question);
+                appendChatMessage(answer, 'bot', { asHTML: true });
+            }, 350);
+            input.value = '';
+        }
+
+        function renderChatActions() {
+            const actionsContainer = document.getElementById('chatbotActions');
+            actionsContainer.innerHTML = '';
+            CHAT_ACTIONS.forEach(action => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'chatbot-action-btn';
+                button.textContent = action.label;
+                button.dataset.question = action.question;
+                button.addEventListener('click', () => {
+                    document.getElementById('chatbotInput').value = action.question;
+                    document.getElementById('chatbotForm').dispatchEvent(new Event('submit'));
+                });
+                actionsContainer.appendChild(button);
+            });
+        }
+
+        function updateChatTimestamp() {
+            const dateEl = document.getElementById('chatbotDate');
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+            dateEl.textContent = formatter.format(now);
+        }
+
+        function initChatbot() {
+            const windowEl = document.getElementById('chatbotWindow');
+            const toggleBtn = document.getElementById('chatbotToggle');
+            const closeBtn = document.getElementById('chatbotClose');
+            const form = document.getElementById('chatbotForm');
+
+            toggleBtn.addEventListener('click', () => {
+                windowEl.classList.toggle('open');
+                toggleBtn.setAttribute('aria-expanded', windowEl.classList.contains('open'));
+            });
+
+            closeBtn.addEventListener('click', () => {
+                windowEl.classList.remove('open');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+            });
+
+            form.addEventListener('submit', handleChatSubmit);
+            renderChatActions();
+            updateChatTimestamp();
+        }
+
+        // --- MODAL CONTENT LOADER ---
+        function loadModalContent(modalId) {
+            const unifiedModal = document.getElementById('unified-modal');
+            const modalContentContainer = document.getElementById('modal-content-container');
+            const modalTitle = document.getElementById('modal-title');
+            
+            modalContentContainer.innerHTML = ''; 
+            let title = '';
+            let contentHTML = '';
+
+            switch (modalId) {
+                case 'tutor-request':
+                    title = 'Peer Tutor Request Form';
+                    contentHTML = `
+                        <form id="dynamic-tutor-request-form">
+                            <div class="form-row">
+                                <div class="form-group"><label for="std-name">Full Name</label><input type="text" id="std-name" required placeholder="Enter your full name"></div>
+                                <div class="form-group"><label for="std-email">AURAK Email</label><input type="email" id="std-email" required placeholder="student@aurak.ac.ae"></div>
+                            </div>
+                            <div class="form-group"><label for="course-req">Course Needed Help With</label><select id="course-req" required>${COURSE_OPTIONS}</select></div>
+                            <div class="form-group"><label for="topic-req">Specific Topics/Areas of Difficulty</label><textarea id="topic-req" rows="4" placeholder="e.g., Loops in CSIT111, Integration techniques"></textarea></div>
+                            <button type="submit" class="submit-btn submit-btn-loading">
+                                <span>Submit Request</span>
+                                <div id="submit-btn-spinner" class="loading-spinner hidden" style="display: none;"></div>
+                            </button>
+                        </form>
+                    `;
+                    break;
+                    case 'available-subjects':
+    title = 'Available Subjects & Courses';
+    contentHTML = `
+        <h4>AURAK Tutoring – Supported Courses</h4>
+        <p>
+            Browse all courses currently supported by the AURAK Peer Tutoring Center.  
+            This panel allows you to search, filter, and view which subjects have tutors available.
+        </p>
+
+        <h5 style="margin-top: 15px;">What You Can Do Here</h5>
+        <ul class="custom-list">
+            <li>Search for a course by <strong>course code</strong> or <strong>course name</strong>.</li>
+            <li>See how many tutors are available for each subject.</li>
+            <li>Check which courses are currently active or coming soon.</li>
+            <li>View tutor availability before scheduling a session.</li>
+        </ul>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid var(--primary-red);">
+            <strong>Note:</strong><br>
+            The detailed list of programs and departments is maintained by AURAK.  
+            You can cross-check courses with the official catalog below.
+        </div>
+
+        <a href="https://aurak.ac.ae/academics/programs-departments"
+           target="_blank"
+           rel="noopener"
+           style="margin-top: 20px; display: inline-block; color: var(--primary-red); font-weight: 600;">
+            <i class="fas fa-external-link-alt"></i> Open Official AURAK Programs &amp; Departments
+        </a>
+    `;
+    break;
+
+
+                    break;
+                    case 'schedule-session':
+    title = 'Schedule a Session';
+    contentHTML = `
+        <h4>Schedule a Tutoring Session</h4>
+        <p>Use the official AURAK Tutoring scheduling system to book a session with an available tutor based on your course, preferred time, and availability.</p>
+
+        <h5 style="margin-top: 15px;">How Scheduling Works</h5>
+        <ul class="custom-list">
+            <li>You must be <strong>logged in</strong> as a Student to schedule a session.</li>
+            <li>Select a <strong>course</strong> you need help with.</li>
+            <li>Choose from available <strong>tutors</strong> and time slots.</li>
+            <li>Confirm your booking and receive instant updates in your dashboard.</li>
+        </ul>
+
+        <h5 style="margin-top: 15px;">Important Notes</h5>
+        <ul class="custom-list">
+            <li>Sessions can be <strong>online or on-campus</strong> depending on tutor availability.</li>
+            <li>Bookings must be made at least <strong>3 hours in advance</strong>.</li>
+            <li>After scheduling, you can view or cancel your sessions from your <strong>Student Dashboard</strong>.</li>
+        </ul>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-left: 4px solid var(--primary-red);">
+            <strong>Next Step:</strong><br>
+            If you are not logged in, please log in first to access the scheduling portal.
+        </div>
+
+        <a href="login.html" class="btn btn-primary" style="margin-top: 20px; text-decoration: none; text-align: center; display: block;">
+            Login to Schedule a Session
+        </a>
+
+        <a href="dashboard.html#schedule" class="btn btn-secondary" style="margin-top: 10px; text-decoration: none; text-align: center; display: block;">
+            Open Scheduling Portal (If Already Logged In)
+        </a>
+    `;
+    break;
+
+                case 'tutor-application':
+                    title = 'Peer Tutor Application Form';
+                    contentHTML = `
+                        <h4>Log in to access the full application!</h4>
+                        <p>If you are a student, please sign into your dashboard to access the Peer Tutor Application Form.</p>
+                        <a href="login.html?mode=tutor" class="submit-btn" style="text-decoration: none; text-align: center; margin-top: 20px;">Go to Login/Sign Up</a>
+                    `;
+                    break;
+                    case 'handbook-view':
+    title = 'AURAK Student Handbook (2025–2026)';
+    contentHTML = `
+        <h4>AURAK Student Handbook (2025–2026)</h4>
+        <p>
+            This official handbook includes essential information about academic policies,
+            assessment rules, attendance requirements, student responsibilities, 
+            code of conduct, advising, and university guidelines.
+        </p>
+
+        <a href="https://aurak.ac.ae/storage/public_documents/files/aurak/handbook/Student%20Handbook%202025-2026.pdf"
+           target="_blank"
+           style="
+               margin-top: 15px;
+               display: inline-block;
+               background: var(--primary-red);
+               padding: 12px 20px;
+               border-radius: 8px;
+               color: #fff;
+               font-weight: 600;
+               text-decoration: none;
+               font-size: 16px;
+           ">
+            <i class="fas fa-file-pdf"></i> Open Student Handbook (PDF)
+        </a>
+
+        <p style="margin-top: 12px; font-size: 13px; color: gray;">
+            *The handbook will open in a new tab as a PDF document.*
+        </p>
+    `;
+    break;
+
+    case 'record-sheet':
+    title = 'Tutorial Record Sheet';
+    contentHTML = `
+        <h4>Official AURAK Tutoring – Tutorial Record Sheet</h4>
+        <p>This sheet must be completed <strong>after every session</strong> to maintain accurate records for quality assurance and reporting.</p>
+
+        <h5 style="margin-top: 15px;">What Should Be Recorded?</h5>
+        <ul class="custom-list">
+            <li><strong>Student Name & ID</strong></li>
+            <li><strong>Course Code</strong> (e.g., MATH 113, CSIT 101)</li>
+            <li><strong>Session Type</strong> – Online / On-Campus</li>
+            <li><strong>Topics Covered</strong> – be specific</li>
+            <li><strong>Session Start & End Time</strong></li>
+            <li><strong>Any Notes or Issues</strong> (optional)</li>
+        </ul>
+
+        <h5 style="margin-top: 15px;">Important Guidelines for Tutors</h5>
+        <ul class="custom-list">
+            <li>Submit the record within <strong>24 hours</strong> after the session.</li>
+            <li>Ensure the information is accurate and matches the scheduled session.</li>
+            <li>For online sessions, always take a <strong>screenshot</strong> as proof of attendance.</li>
+            <li>For on-campus sessions, write the room number clearly.</li>
+            <li>If a student does not show up, record it as <strong>No-Show</strong>.</li>
+        </ul>
+
+        <h5 style="margin-top: 15px;">Tips to Write a High-Quality Record</h5>
+        <ul class="custom-list">
+            <li>Use bullet points to summarize the tutoring topics.</li>
+            <li>Keep the explanation clear and student-friendly.</li>
+            <li>Note concepts the student struggled with (helps with follow-up sessions).</li>
+            <li>Record improvement and progress when possible.</li>
+        </ul>
+
+        <a href="#" style="margin-top: 20px; display: inline-block; color: var(--primary-red); font-weight: 600;">
+            <i class="fas fa-download"></i> Download Blank Record Sheet Template
+        </a>
+    `;
+    break;
+
+    title = 'Frequently Asked Questions (FAQ)';
+    contentHTML = `
+        <h4>AURAK Student FAQ</h4>
+        <p>
+            Access answers to common questions about academics, registration, advising, 
+            campus life, library services, IT support, and more through the official 
+            AURAK FAQ page.
+        </p>
+
+        <a href="https://aurak.ac.ae/life-at-aurak/faq" target="_blank"
+           style="
+               margin-top: 15px; 
+               display: inline-block; 
+               background: var(--primary-red); 
+               padding: 12px 20px; 
+               border-radius: 8px; 
+               color: #fff; 
+               font-weight: 600; 
+               text-decoration: none; 
+               font-size: 16px;
+           ">
+            <i class="fas fa-question-circle"></i> Open AURAK FAQ Page
+        </a>
+
+        <p style="margin-top: 12px; font-size: 13px; color: gray;">
+            *This will open in a new tab. All official AURAK answers are maintained on their website.*
+        </p>
+    `;
+    break;
+
+                    case 'study-resources':
+    title = 'AURAK Library Resources';
+    contentHTML = `
+        <h4>Access AURAK Library</h4>
+        <p>
+            Explore books, academic journals, e-resources, research databases, 
+            study materials, and more through the official AURAK Library portal.
+        </p>
+
+        <a href="https://aurak.ac.ae/life-at-aurak/library" target="_blank"
+           style="margin-top: 15px; display: inline-block; 
+                  background: var(--primary-red); padding: 12px 20px; 
+                  border-radius: 8px; color: #fff; font-weight: 600; 
+                  text-decoration: none; font-size: 16px;">
+            <i class="fas fa-book-open"></i> Open AURAK Library Website
+        </a>
+
+        <p style="margin-top: 12px; font-size: 13px; color: gray;">
+            *This will open in a new tab.*
+        </p>
+    `;
+    break;
+
+                case 'contact-support':
+                    title = 'Contact Support';
+                    contentHTML = `
+                        <form id="dynamic-contact-form">
+                            <div class="form-group"><label for="contact-name">Your Full Name</label><input type="text" id="contact-name" required placeholder="Enter your name"></div>
+                            <div class="form-group"><label for="contact-email">AURAK Email</label><input type="email" id="contact-email" required placeholder="student@aurak.ac.ae"></div>
+                            <div class="form-group"><label for="contact-subject">Subject</label><input type="text" id="contact-subject" required placeholder="Brief summary of your query"></div>
+                            <div class="form-group"><label for="contact-message">Message</label><textarea id="contact-message" rows="5" required placeholder="Describe your issue or question in detail."></textarea></div>
+                            <button type="submit" class="submit-btn">Send Message</button>
+                        </form>
+                    `;
+                    break;
+                    case 'tutor-guidelines':
+    title = 'Tutor Guidelines';
+    contentHTML = `
+        <h4>AURAK Peer Tutoring – Tutor Guidelines</h4>
+        <p>
+            This guide outlines the official responsibilities, expectations, and ethical standards 
+            required from all AURAK Peer Tutors. Every tutor must follow these rules to maintain 
+            professionalism, fairness, and academic integrity when supporting students.
+        </p>
+
+        <h5 style="margin-top: 15px;">What Tutors Must Follow</h5>
+        <ul class="custom-list">
+            <li>Maintain professionalism and respectful communication at all times.</li>
+            <li>Provide academic support without completing assignments for students.</li>
+            <li>Respect student confidentiality and privacy.</li>
+            <li>Record all sessions accurately in the Tutorial Record Sheet.</li>
+            <li>Arrive on time and be prepared for every scheduled session.</li>
+            <li>Follow AURAK’s academic integrity and misconduct policies.</li>
+        </ul>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid var(--primary-red);">
+            <strong>Note:</strong><br>
+            All tutors must read and comply with the official AURAK Student Code of Conduct and 
+            Academic Integrity policies.
+        </div>
+
+        <a href="https://aurak.ac.ae/life-at-aurak/student-affairs/code-conduct"
+           target="_blank"
+           rel="noopener"
+           style="margin-top: 20px; display: inline-block; color: var(--primary-red); font-weight: 600;">
+            <i class="fas fa-book"></i> Open AURAK Code of Conduct
+        </a>
+    `;
+    break;
+
+                case 'student-resources':
+                    title = 'Student Resources';
+                    contentHTML = `
+                        <h4>General Academic Support & Study Tips</h4>
+                        <p>A collection of helpful links and tips for all students, covering topics like time management, exam preparation strategies, and finding academic assistance across campus.</p>
+                        <a href="#" style="margin-top: 15px; display: inline-block; color: var(--primary-red); font-weight: 600;"><i class="fas fa-graduation-cap"></i> View Study Success Tips</a>
+                    `;
+                    break;
+                default:
+                    title = 'Error';
+                    contentHTML = '<p>Content not found.</p>';
+            }
+
+            modalTitle.textContent = title;
+            modalContentContainer.innerHTML = contentHTML;
+
+            // Attach dynamic submission handlers
+            const tutorRequestForm = document.getElementById('dynamic-tutor-request-form');
+            if (tutorRequestForm) {
+                tutorRequestForm.addEventListener('submit', handlePublicTutorRequestSubmit);
+            }
+            
+            // Re-attach generic form submission handlers for other modals (Contact, etc.)
+            const genericForms = document.querySelectorAll('#modal-content-container form:not(#dynamic-tutor-request-form)');
+            genericForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    showToast(`${modalTitle.textContent} submitted successfully!`);
+                    closeModal(unifiedModal);
+                    this.reset();
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // CAROUSEL LOGIC (ENHANCED)
+            const slides = document.querySelector('.carousel-slides');
+            const slideElements = document.querySelectorAll('.carousel-slide');
+            const indicators = document.querySelectorAll('.indicator');
+            const prevBtn = document.querySelector('.carousel-control.prev');
+            const nextBtn = document.querySelector('.carousel-control.next');
+            let currentSlide = 0;
+            const totalSlides = 4;
+            let carouselInterval;
+
+            function updateCarousel() {
+                slides.style.transform = `translateX(-${currentSlide * 25}%)`;
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === currentSlide);
+                });
+                
+                // Update active slide for animations
+                slideElements.forEach((slide, index) => {
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+            }
+            
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateCarousel();
+            }
+            
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateCarousel();
+            }
+            
+            function startCarousel() {
+                carouselInterval = setInterval(nextSlide, 5000);
+            }
+            
+            function stopCarousel() {
+                clearInterval(carouselInterval);
+            }
+            
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    updateCarousel();
+                    stopCarousel();
+                    startCarousel();
+                });
+            });
+            
+            // Pause carousel on hover
+            const carousel = document.querySelector('.banner-carousel');
+            carousel.addEventListener('mouseenter', stopCarousel);
+            carousel.addEventListener('mouseleave', startCarousel);
+            
+            // Start carousel
+            startCarousel();
+            updateCarousel();
+            
+            // SMOOTH SCROLLING
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId && targetId !== '#') {
+                        document.querySelector(targetId).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // STAT COUNTER ANIMATION
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const animateCountUp = (entry) => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.target);
+                    let current = 0;
+                    const increment = target / 100;
+                    const updateCount = () => {
+                        if (current < target) {
+                            current += increment;
+                            entry.target.textContent = Math.round(current) + (target === 94 ? '%' : '+');
+                            requestAnimationFrame(updateCount);
+                        } else {
+                            entry.target.textContent = target + (target === 94 ? '%' : '+');
+                        }
+                    };
+                    updateCount();
+                    observer.unobserve(entry.target);
+                }
+            };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(animateCountUp);
+            }, { threshold: 0.5 });
+            statNumbers.forEach(number => {
+                observer.observe(number);
+            });
+
+            // SCROLL EFFECTS
+            const header = document.getElementById('main-header');
+            const scrollToTopBtn = document.querySelector('.scroll-to-top');
+            
+            window.addEventListener('scroll', function() {
+                // Header effect
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                
+                // Scroll to top button
+                if (window.scrollY > 300) {
+                    scrollToTopBtn.classList.add('visible');
+                } else {
+                    scrollToTopBtn.classList.remove('visible');
+                }
+            });
+            
+            // Scroll to top functionality
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // --- MODAL & INTERACTION HOOKS ---
+            const unifiedModal = document.getElementById('unified-modal');
+            const openModalLinks = document.querySelectorAll('.open-modal-link'); 
+
+            // Loop through all dynamic links and attach the corrected event handler
+            openModalLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const modalId = this.getAttribute('data-modal-id');
+                    
+                    if (unifiedModal) {
+                        loadModalContent(modalId); // Load content first
+                        
+                        // Manually open the modal element 
+                        unifiedModal.classList.add('active'); 
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            // Close Modal Event Listener (X button)
+            const closeModalButtons = unifiedModal.querySelectorAll('.close-modal');
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => closeModal(unifiedModal));
+            });
+
+            // Close Modal Event Listener (Overlay click)
+            window.addEventListener('click', function(e) {
+                if (e.target === unifiedModal) {
+                    closeModal(unifiedModal);
+                }
+            });
+
+            // Close Modal Event Listener (Escape key)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape" && unifiedModal.classList.contains('active')) {
+                    closeModal(unifiedModal);
+                }
+            });
+
+            initChatbot();
+        });
+    </script>
+</body>
+</html>

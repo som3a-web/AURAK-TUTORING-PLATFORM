@@ -1,0 +1,4383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURAK Student Dashboard | Enhanced</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Utility */
+        .hidden { display: none !important; }
+
+        /* User panel (name + role + logout) that sits in header .nav-controls */
+        .user-panel {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        }
+
+        .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.15);
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: #fff;
+        line-height: 1;
+        }
+
+        .user-chip i { opacity: 0.9; }
+
+        .role-badge {
+        background: var(--accent-yellow);
+        color: #222;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        }
+
+        /* Logout button in header */
+        .logout-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.75);
+        color: #fff;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+        background: rgba(255,255,255,0.15);
+        transform: translateY(-1px);
+        }
+
+        .profile-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .profile-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-1px);
+        }
+
+        /* NEW CSS for Role-Specific Messages */
+        .role-message-card {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-top: 50px;
+            border-top: 5px solid var(--warning-orange);
+        }
+        .role-message-card.success {
+            border-top-color: var(--success-green);
+        }
+        .role-message-card h2 {
+            color: var(--primary-red);
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        /* NEW CSS for Admin Application List */
+        .application-item, .request-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            padding: 15px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        /* --- ENHANCED CSS STYLING --- */
+        :root {
+            /* Core Palette */
+            --primary-red: #C8102E;
+            --accent-yellow: #FFC72C;
+            --primary-blue: #0044a0;
+            --success-green: #2E7D32;
+            --warning-orange: #FF9800;
+            --white: #FFFFFF;
+            --light-gray: #f5f5f7;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --text-dark: #212121;
+            
+            /* Dark Mode Variables */
+            /* Note: Body starts light and JS applies dark mode if preferred */
+            --bg-page: var(--light-gray);
+            --bg-card: var(--white);
+            --bg-sidebar: var(--white);
+            --text-color: var(--text-dark);
+            --border-color: var(--medium-gray);
+
+            /* Design Elements */
+            --shadow: 0 6px 16px rgba(0,0,0,0.08);
+            --shadow-hover: 0 10px 20px rgba(0,0,0,0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, var(--primary-red) 0%, #a00d24 100%);
+            --gradient-secondary: linear-gradient(135deg, var(--primary-blue) 0%, #003380 100%);
+        }
+
+        /* Dark Mode Configuration */
+        body.dark {
+            --bg-page: #121212;
+            --bg-card: #1e1e1e;
+            --bg-sidebar: #2d2d2d;
+            --text-color: #e0e0e0;
+            --border-color: #404040;
+            --dark-gray: #b0b0b0;
+            --shadow: 0 6px 16px rgba(0,0,0,0.4);
+            --shadow-hover: 0 10px 20px rgba(0,0,0,0.6);
+            --light-gray: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 82px;
+            background-attachment: fixed;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Enhanced Header */
+        header {
+            background-color: var(--primary-red);
+            color: var(--white);
+            padding: 16px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            padding: 10px 0;
+            background-color: rgba(200, 16, 46, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+            padding: 1px;
+            transition: var(--transition);
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: auto;
+            filter: contrast(1.15) brightness(1.03) saturate(1.05) drop-shadow(0 0 0.5px rgba(0,0,0,0.1));
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transform: scale(1) translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            outline: none;
+            border: none;
+            -webkit-filter: contrast(1.15) brightness(1.03) saturate(1.05);
+            -ms-filter: contrast(1.15) brightness(1.03) saturate(1.05);
+        }
+
+        .logo-container:hover .logo-img {
+            transform: rotate(10deg);
+            box-shadow: 0 0 10px rgba(255, 199, 44, 0.5);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #C8102E, #FFC72C, #C8102E);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: var(--transition);
+            padding: 8px 0;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent-yellow);
+            transition: var(--transition);
+        }
+
+        .nav-links a.active {
+            color: var(--accent-yellow);
+        }
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .signin-btn {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .signin-btn:hover::before {
+            left: 100%;
+        }
+
+        .signin-btn:hover {
+            background-color: #e6b325;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Enhanced Footer */
+        footer {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* --- ENHANCED DASHBOARD STYLES --- */
+        
+        /* Main Dashboard Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            padding: 40px 0 60px;
+        }
+
+        @media (min-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* Enhanced Card Styling */
+        .module-card {
+            background-color: var(--bg-card);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .module-card.no-margin {
+            margin-bottom: 0;
+        }
+
+        .module-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-red);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Tutor subject manager */
+        .tutor-subject-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .subject-pill {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            gap: 12px;
+        }
+
+        body.dark .subject-pill {
+            background: #1f1f1f;
+        }
+
+        .subject-pill strong {
+            display: block;
+            font-size: 15px;
+            color: var(--primary-red);
+        }
+
+        .subject-pill small {
+            display: block;
+            margin-top: 4px;
+            color: var(--dark-gray);
+        }
+
+        .subject-pill button {
+            border: none;
+            background: rgba(200,16,46,0.1);
+            color: var(--primary-red);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .subject-pill button:hover {
+            background: rgba(200,16,46,0.2);
+        }
+
+        .tutor-subject-form {
+            margin-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 20px;
+        }
+
+        .tutor-subject-form .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .tutor-subject-form .form-group label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        #tutor-subject-status {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Greeting & Search */
+        .header-section {
+            padding: 30px 0 20px;
+            background-color: var(--bg-page);
+        }
+
+        #personalized-greeting {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+            transition: color 0.3s;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        #search-status {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 600px;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 14px 50px 14px 20px;
+            border: 2px solid var(--primary-red);
+            border-radius: 50px;
+            font-size: 16px;
+            background-color: var(--bg-card);
+            color: var(--text-color);
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .search-bar::placeholder {
+            color: var(--dark-gray);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-red);
+            font-size: 18px;
+        }
+
+        /* Enhanced Progress Analytics */
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .progress-item {
+            padding: 20px 15px;
+            border-radius: var(--border-radius);
+            background: var(--gradient-secondary);
+            color: white;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .progress-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .progress-value {
+            font-size: 30px;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+        
+        .progress-label {
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* Enhanced Exam Deadlines */
+        .exam-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px dashed var(--border-color);
+            transition: background-color 0.2s;
+            border-radius: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .exam-item:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .exam-item:last-child {
+            border-bottom: none;
+        }
+        
+        .countdown {
+            font-weight: 700;
+            color: var(--primary-blue);
+            background: rgba(0, 68, 160, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .urgent {
+            color: var(--primary-red);
+            background: rgba(200, 16, 46, 0.1);
+        }
+
+        /* Enhanced Tutor/Course Items */
+        .tutor-suggestion, .course-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+            border-radius: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .tutor-suggestion:hover, .course-item:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .tutor-suggestion:last-child, .course-item:last-child {
+            border-bottom: none;
+        }
+        
+        .avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-right: 15px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .tutor-details {
+            flex-grow: 1;
+        }
+        
+        .tutor-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .tutor-availability {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .tutor-availability.available {
+            background-color: var(--success-green);
+            color: white;
+        }
+        
+        .tutor-availability.busy {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+        }
+        
+        .session-action a {
+            padding: 8px 15px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .session-action a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Enhanced Notifications */
+        .notification-item {
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .notification-item i {
+            color: var(--primary-red);
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Enhanced Floating Button */
+        #create-post-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 900;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #create-post-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Enhanced Dark Mode Toggle */
+        .dark-mode-toggle {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--white);
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.1);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dark-mode-toggle:hover {
+            color: var(--accent-yellow);
+            background: rgba(255,255,255,0.2);
+            transform: rotate(15deg);
+        }
+        
+        .dark .dark-mode-toggle i.fa-moon {
+            display: none;
+        }
+        
+        .dark-mode-toggle i.fa-sun {
+            display: none;
+        }
+        
+        .dark .dark-mode-toggle i.fa-sun {
+            display: inline;
+        }
+
+        /* Enhanced Achievements/Badges */
+        .badges-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .badge {
+            text-align: center;
+            opacity: 0.4;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .badge.unlocked {
+            opacity: 1;
+        }
+        
+        .badge:hover {
+            transform: translateY(-5px);
+        }
+        
+        .badge.unlocked:hover {
+            transform: scale(1.1) translateY(-5px);
+        }
+        
+        .badge-icon {
+            font-size: 36px;
+            color: var(--accent-yellow);
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .badge-label {
+            font-size: 12px;
+            margin-top: 5px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        /* Enhanced Modal Styles */
+        .modal-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+        
+        .modal-content {
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%; 
+            max-width: 600px;
+            max-height: 90vh; 
+            overflow-y: auto;
+            box-shadow: var(--shadow-hover);
+            transform: scale(0.95); 
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-overlay.active .modal-content { 
+            transform: scale(1); 
+        }
+        
+        .modal-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 15px; 
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 { 
+            color: var(--primary-red); 
+            font-size: 24px; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none; 
+            border: none; 
+            font-size: 30px; 
+            cursor: pointer;
+            color: var(--dark-gray); 
+            transition: color 0.3s;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-modal:hover { 
+            color: var(--primary-red); 
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: var(--text-color);
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius); 
+            background-color: var(--bg-page);
+            color: var(--text-color); 
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none; 
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+        }
+        
+        .submit-btn {
+            background: var(--gradient-primary); 
+            color: white; 
+            border: none;
+            padding: 14px 25px; 
+            border-radius: var(--border-radius); 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s; 
+            width: 100%;
+            font-size: 16px;
+        }
+        
+        .submit-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Enhanced Toast Notification */
+        #toast-notification {
+            position: fixed; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            background: var(--gradient-secondary); 
+            color: white; 
+            padding: 15px 25px;
+            border-radius: 50px; 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0; 
+            visibility: hidden; 
+            transition: all 0.4s ease;
+            z-index: 10002; 
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+        }
+        
+        #toast-notification.show { 
+            opacity: 1; 
+            visibility: visible; 
+            bottom: 40px;
+        }
+        
+        #toast-notification.error {
+            background: var(--gradient-primary);
+        }
+
+        /* Search Results Styling */
+        .search-results {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .search-result-item {
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            background: var(--bg-card);
+            transition: all 0.3s;
+        }
+        
+        .search-result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .search-result-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .type-tutor {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .type-course {
+            background: var(--success-green);
+            color: white;
+        }
+        
+        .type-resource {
+            background: var(--warning-orange);
+            color: white;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 20px;
+            }
+            
+            #personalized-greeting {
+                font-size: 28px;
+            }
+            
+            .progress-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal-content {
+                padding: 20px 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-controls {
+                margin-top: 10px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            #personalized-greeting {
+                font-size: 24px;
+            }
+            
+            #create-post-btn {
+                right: 15px;
+                bottom: 15px;
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            .progress-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .exam-item, .tutor-suggestion, .course-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .session-action, .tutor-availability {
+                align-self: flex-end;
+            }
+        }
+        
+        /* Animation for new items */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container" onclick="window.location.href='homepage.html'">
+                    <div class="logo-img">
+                        <img src="image.html/image6-adjusted.png" alt="AURAK official logo">
+                    </div>
+                    <div class="logo-text">AURAK Tutoring Platform</div>
+                </div>
+                <div class="nav-controls">
+                    <nav class="nav-links">
+                      <a href="homepage.html">Home</a> 
+                      <a href="dashboard.html" class="active">Dashboard</a>
+                      <a href="aboutus.html">About Us</a>  
+                      <a href="LOGIN.HTML?mode=register">Sign Up</a>
+                    </nav>
+                    
+                    <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode">
+                      <i class="fas fa-moon"></i>
+                      <i class="fas fa-sun"></i>
+                    </button>
+                    
+                    <div id="userPanel" class="user-panel hidden">
+                      <span class="user-chip">
+                        <i class="fa-solid fa-user"></i>
+                        <span id="userName">User</span>
+                        <span id="userRole" class="role-badge">STUDENT</span>
+                      </span>
+                      <button id="profileBtn" class="profile-btn" title="Manage profile">
+                        <i class="fa-solid fa-user-gear"></i>
+                      </button>
+                      <button id="logoutBtn" class="logout-btn" title="Log out">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                      </button>
+                    </div>
+                    
+                    <a class="signin-btn" id="signinLink" href="login.html">Sign In</a>
+                  </div>
+                  
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="header-section">
+                <h1 id="personalized-greeting">Good Morning, Student! 👋</h1>
+                <div id="search-status" style="display: none;"></div>
+                <div class="search-container" id="global-search-container">
+                    <input type="text" id="global-search" class="search-bar" placeholder="Global Search: Tutors, Resources, Posts, Courses (e.g., CSIT111)" aria-label="Global Search">
+                    <div class="search-icon"><i class="fas fa-search"></i></div>
+                </div>
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <div id="role-dashboard-container">
+                
+                <div class="dashboard-grid role-view" id="student-view">
+                    <section class="main-content">
+                        
+                        <div class="module-card">
+                            <h2><i class="fas fa-chart-bar"></i> My Progress Analytics</h2>
+                            <div class="progress-grid" id="progress-grid">
+                            </div>
+                        </div>
+
+                        <div class="module-card">
+                            <h2><i class="fas fa-calendar-plus"></i> Request a Tutoring Session</h2>
+                            <form id="sessionRequestForm">
+                              <div class="form-row">
+                                <div class="form-group">
+                                  <label for="request-course">Course Code</label>
+                                  <input type="text" id="request-course" placeholder="e.g. CSIT111" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="request-location">Location (or "Online")</label>
+                                    <input
+                                      type="text"
+                                      id="request-location"
+                                      placeholder="e.g. Library 1st floor or Online (Teams)">
+                                  </div>
+                              </div>
+                              
+                              <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                  <label for="request-tutor-select">Select Tutor</label>
+                                  <select id="request-tutor-select" required>
+                                    <option value="">Loading tutors...</option>
+                                  </select>
+                                  <small id="tutor-loading-status" style="color: var(--dark-gray); font-size: 12px; display: none;">
+                                    Loading tutors...
+                                  </small>
+                                </div>
+                              </div>
+                          
+                              <div class="form-row">
+                                <div class="form-group">
+                                  <label for="request-date">Date</label>
+                                  <input type="date" id="request-date" required>
+                                </div>
+                          
+                                <div class="form-group">
+                                  <label for="request-start">Start Time</label>
+                                  <input type="time" id="request-start" required>
+                                </div>
+                          
+                                <div class="form-group">
+                                  <label for="request-end">End Time (optional)</label>
+                                  <input type="time" id="request-end">
+                                </div>
+                              </div>
+                          
+                              <div class="form-group">
+                                <label for="request-notes">Notes for the Tutor</label>
+                                <textarea id="request-notes" rows="3" placeholder="What do you need help with?"></textarea>
+                              </div>
+                          
+                              <button type="submit" class="submit-btn" style="background-color: var(--primary-red); color: #fff;">
+                                <i class="fas fa-paper-plane"></i> Send Request
+                              </button>
+                          
+                              <p id="session-request-message" style="margin-top: 10px;"></p>
+                            </form>
+                          </div>
+
+                        <div class="module-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h2 style="margin: 0;"><i class="fas fa-calendar-check"></i> My Upcoming Sessions</h2>
+                                <button onclick="loadStudentUpcomingSessions()" class="submit-btn" style="background-color: var(--primary-blue); padding: 8px 15px; font-size: 14px;">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                            <div id="student-upcoming-sessions">
+                                <p style="color: var(--dark-gray);">Loading upcoming sessions...</p>
+                            </div>
+                        </div>
+
+                        <div class="module-card">
+                            <h2><i class="fas fa-comments"></i> Messages</h2>
+                            <div id="messages-container">
+                                <div id="messages-sessions-list" style="margin-bottom: 15px;">
+                                    <p style="color: var(--dark-gray); font-size: 14px;">Select a session to view messages</p>
+                                </div>
+                                <div id="messages-chat-area" style="display: none;">
+                                    <div id="messages-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                                        <div>
+                                            <strong id="messages-session-title"></strong>
+                                            <p style="font-size: 12px; color: var(--dark-gray); margin-top: 5px;" id="messages-session-info"></p>
+                                        </div>
+                                        <button onclick="closeMessagesChat()" class="submit-btn" style="background-color: var(--dark-gray); padding: 8px 15px; font-size: 14px;">
+                                            <i class="fas fa-times"></i> Close
+                                        </button>
+                                    </div>
+                                    <div id="messages-list" style="height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: var(--bg-card);">
+                                        <p style="color: var(--dark-gray); text-align: center;">Loading messages...</p>
+                                    </div>
+                                    <form id="send-message-form" style="display: flex; gap: 10px;">
+                                        <input type="hidden" id="current-session-id">
+                                        <input type="hidden" id="current-receiver-id">
+                                        <input type="text" id="message-input" placeholder="Type your message..." required style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                                        <button type="submit" class="submit-btn" style="background-color: var(--primary-blue); padding: 10px 20px;">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <aside class="sidebar-content">
+                        
+                        
+
+                        
+
+                        <div class="module-card">
+                            <h2><i class="fas fa-medal"></i> Achievements & Badges</h2>
+                            <div class="badges-grid" id="badges-grid">
+                            </div>
+                        </div>
+
+                    </aside>
+                </div>
+                
+                <div class="role-view hidden" id="pending-tutor-view">
+                    <div class="role-message-card">
+                      <h2><i class="fas fa-clock"></i> Application Under Review</h2>
+                      <p>Thank you for applying to be an AURAK Peer Tutor! Your application has been submitted and is currently being reviewed by the Administration. You will receive an email and a dashboard notification when a decision has been made.</p>
+                      <p style="margin-top: 15px; color: var(--dark-gray);">
+                        Application status updated: <span id="pending-date">--</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="role-view hidden" id="approved-tutor-view">
+                    <div class="role-message-card success">
+                      <h2><i class="fas fa-user-tie"></i> Tutor Dashboard: Active</h2>
+                      <p>Welcome, <span id="tutor-welcome-name">Tutor</span>. You are approved! Manage your schedule and view upcoming sessions here.</p>
+                    </div>
+                    <div class="module-card">
+                        <h2><i class="fas fa-hourglass-half"></i> Pending Session Requests</h2>
+                        <div id="pending-sessions-list">
+                          <p style="color: var(--dark-gray);">No pending requests yet.</p>
+                        </div>
+                      </div>
+                      
+                  
+                    <!-- ✅ Set Weekly Availability -->
+                    <div class="module-card">
+                      <h2><i class="fas fa-calendar-week"></i> Set Weekly Availability</h2>
+                      <form id="tutorAvailabilityForm">
+                        <div id="schedule-slots-container">
+                          <p style="color: var(--dark-gray); margin-bottom: 15px;">
+                            Click 'Add Slot' to define your regular weekly schedule.
+                          </p>
+                        </div>
+                  
+                        <button type="button" class="submit-btn" id="add-slot-btn"
+                                style="background-color: var(--primary-blue); margin-top: 10px; width: auto;">
+                          <i class="fas fa-plus"></i> Add Slot
+                        </button>
+                  
+                        <button type="submit" class="submit-btn" id="save-availability-btn"
+                                style="background-color: var(--success-green); margin-top: 20px;">
+                          <span><i class="fas fa-save"></i> Save Availability</span>
+                        </button>
+                      </form>
+                    </div>
+                  
+                    <!-- ✅ Your Saved Availability (moved inside approved tutor view) -->
+                    <div class="module-card">
+                      <h2><i class="fas fa-clock"></i> Your Saved Availability</h2>
+                      <div id="tutor-availability-list">
+                        <p style="color: var(--dark-gray);">No slots loaded yet.</p>
+                      </div>
+                    </div>
+                  
+                    <div class="module-card">
+                      <h2><i class="fas fa-book"></i> Subjects You Teach</h2>
+                      <div id="tutor-subject-list" class="tutor-subject-list">
+                        <p style="color: var(--dark-gray);">No subjects added yet. Use the form below to list courses you can cover.</p>
+                      </div>
+                      <form id="tutor-subject-form" class="tutor-subject-form">
+                        <div class="form-row">
+                          <div class="form-group">
+                            <label for="subject-code">Course Code</label>
+                            <input type="text" id="subject-code" placeholder="e.g., CSIT111" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="subject-title">Course Name</label>
+                            <input type="text" id="subject-title" placeholder="Intro to Programming" required>
+                          </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 12px;">
+                          <label for="subject-notes">Notes (optional)</label>
+                          <input type="text" id="subject-notes" placeholder="Lab support, exam prep, etc.">
+                        </div>
+                        <button type="submit" class="submit-btn" style="background-color: var(--primary-blue); margin-top: 12px; width: auto;">
+                          <i class="fas fa-plus"></i> Add Subject
+                        </button>
+                        <p id="tutor-subject-status"></p>
+                      </form>
+                    </div>
+                  </div>
+                  
+                <div class="role-view hidden" id="admin-view">
+                    <div class="role-message-card">
+                        <h2><i class="fas fa-user-shield"></i> Administrator Control Panel</h2>
+                        <p>Welcome, Admin. Use this panel to manage user accounts, vet pending tutor applications, and monitor system health.</p>
+                    </div>
+
+                    <div class="module-card">
+                        <h2><i class="fas fa-list-check"></i> Pending Tutor Applications (<span id="pending-count">0</span>)</h2>
+                        
+                        <div id="pending-applications-list">
+                            <p id="loading-applications" style="text-align: center; color: var(--dark-gray);">Loading pending applications...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card">
+                        <h2><i class="fas fa-headset"></i> Pending Public Tutor Requests</h2>
+                        <div id="public-requests-list">
+                            </div>
+                    </div>
+                    
+                </div>
+
+            </div>
+            </div>
+    </main>
+    
+    <button id="create-post-btn" onclick="openModal(document.getElementById('post-modal'))">
+        <i class="fas fa-plus"></i> Create Post
+    </button>
+    
+    <button id="open-tutor-app-btn" class="signin-btn" style="position: fixed; bottom: 30px; left: 30px;" onclick="openModal(document.getElementById('tutor-application-modal'))">
+        <i class="fas fa-user-graduate"></i> Become a Tutor
+    </button>
+<!-- TUTOR APPLICATION MODAL -->
+<div id="tutor-application-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tutor-application-title">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="tutor-application-title">
+                <i class="fas fa-user-graduate"></i> Become a Peer Tutor
+            </h3>
+            <button class="close-modal" onclick="closeModal(document.getElementById('tutor-application-modal'))">&times;</button>
+        </div>
+
+        <form id="tutorApplicationForm">
+            <div class="form-group">
+                <label for="major">Major</label>
+                <input type="text" id="major" required placeholder="e.g., Computer Science">
+            </div>
+
+            <div class="form-group">
+                <label for="gpa">Current GPA</label>
+                <input type="number" step="0.01" min="0" max="4" id="gpa" required placeholder="e.g., 3.50">
+            </div>
+
+            <div class="form-group">
+                <label for="courses_to_tutor">Courses you want to tutor</label>
+                <input type="text" id="courses_to_tutor" required placeholder="e.g., CSIT111, MATH255">
+            </div>
+
+            <div class="form-group">
+                <label for="motivation_essay">Why do you want to be a tutor?</label>
+                <textarea id="motivation_essay" rows="4" required placeholder="Write a short paragraph explaining why you are a good tutor."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-application-btn">
+                <span id="submit-application-text">Submit Application</span>
+                <span id="submit-application-spinner" class="loading-spinner" style="display:none;"></span>
+            </button>
+        </form>
+    </div>
+</div>
+
+    <div id="assign-tutor-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="assign-tutor-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="assign-tutor-title"><i class="fas fa-user-plus"></i> Assign Tutor to Request</h3>
+                <button class="close-modal" onclick="closeModal(document.getElementById('assign-tutor-modal'))">&times;</button>
+            </div>
+            <form id="assignmentForm">
+                <input type="hidden" id="current-request-id" name="request_id">
+                
+                <div class="form-group">
+                    <label>Request Details:</label>
+                    <p id="assignment-request-details" style="font-weight: 500;"></p>
+                    <p style="font-size: 14px; color: var(--primary-red);">Course: <strong id="assignment-course"></strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="tutor-select">Select Available Tutor:</label>
+                    <select id="tutor-select" name="tutor_id" required>
+                        <option value="">Loading Approved Tutors...</option>
+                        </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="assignment-notes">Notes for Assignment (Optional)</label>
+                    <textarea id="assignment-notes" rows="3" placeholder="e.g., Follow up with student by tomorrow."></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="confirm-assignment-btn">
+                    <span>Confirm Assignment</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="profile-modal-title"><i class="fas fa-user-circle"></i> Update Profile</h3>
+                <button class="close-modal" onclick="closeModal(document.getElementById('profile-modal'))">&times;</button>
+            </div>
+            <form id="profileForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="profile-first-name">First Name</label>
+                        <input type="text" id="profile-first-name" placeholder="e.g., Ismaail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-last-name">Last Name</label>
+                        <input type="text" id="profile-last-name" placeholder="e.g., Al Laham" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="profile-display-name">Display Name</label>
+                    <input type="text" id="profile-display-name" placeholder="Name shown on dashboard" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" placeholder="student@aurak.ac.ae" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-phone">Phone (optional)</label>
+                    <input type="tel" id="profile-phone" placeholder="+971 50 000 0000">
+                </div>
+                <p id="profile-status" style="min-height: 20px; margin-top: 5px;"></p>
+                <button type="submit" class="submit-btn">
+                    <span><i class="fas fa-save"></i> Save Profile</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <template id="application-template">
+        <div class="application-item" data-user-id="">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+                <div>
+                    <strong class="app-name"></strong>
+                    <span class="app-major" style="font-size: 14px; color: var(--dark-gray);"></span><br>
+                    <span class="app-gpa" style="font-size: 12px; color: var(--success-green);"></span>
+                </div>
+                <div class="app-actions">
+                    </div>
+            </div>
+            <div class="module-card no-margin" style="padding: 5px; margin-bottom: 15px; border-left: none; cursor: pointer; display: flex; align-items: center;" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('i').classList.toggle('fa-chevron-down'); this.querySelector('i').classList.toggle('fa-chevron-up');">
+                <i class="fas fa-chevron-down" style="margin-right: 5px; color: var(--primary-blue);"></i> Click to view details
+            </div>
+            <div class="app-details hidden" style="padding: 10px; background-color: var(--light-gray); border-radius: 8px; margin-top: -10px;">
+                <p><strong>Courses:</strong> <span class="app-courses"></span></p>
+                <p><strong>Essay:</strong> <span class="app-essay"></span></p>
+                <p style="font-size: 12px; margin-top: 8px;">Applied: <span class="app-date"></span></p>
+            </div>
+        </div>
+    </template>
+    
+    <template id="public-request-template">
+        <div class="request-item" data-request-id="">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+                <div>
+                    <strong class="req-name"></strong>
+                    <span class="req-course-tag course-tag" style="background-color: var(--primary-blue); margin-left: 10px;"></span>
+                </div>
+                <div class="req-actions">
+                    </div>
+            </div>
+            <p style="font-size: 14px; color: var(--dark-gray); margin-bottom: 10px;">
+                <i class="fas fa-envelope"></i> Email: <span class="req-email"></span> | Date: <span class="req-date"></span>
+            </p>
+            <p style="font-size: 14px;"><strong>Topic:</strong> <span class="req-topic"></span></p>
+        </div>
+    </template>
+    
+    <div id="toast-notification" role="alert" aria-live="assertive">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Action completed successfully!</span>
+    </div>
+
+    <template id="availability-slot-template">
+        <div class="form-row" style="margin-bottom: 15px; border-bottom: 1px dashed var(--light-gray); padding-bottom: 10px; align-items: flex-end;">
+            <div class="form-group" style="grid-column: span 1;">
+                <label>Day</label>
+                <select class="slot-day" required>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" class="slot-start" required>
+            </div>
+            <div class="form-group">
+                <label>End Time</label>
+                <input type="time" class="slot-end" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label>Location</label>
+                <select class="slot-location" required>
+                    <option value="Online">Online</option>
+                    <option value="On-Campus">On-Campus</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-secondary remove-slot" style="background-color: var(--primary-red); color: white; border: none; padding: 10px 10px; font-size: 14px; width: 100%;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </template>
+    
+    <script>
+        // Function to show only the relevant view (moved here for global access)
+        function showRoleView(viewElement) {
+            document.querySelectorAll('.role-view').forEach(el => el.classList.add('hidden'));
+            if (viewElement) {
+                viewElement.classList.remove('hidden');
+            }
+        }
+        
+        // Logout handler (moved here for global access)
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('aurak_user');
+                location.href = '/SE.PROJECT/login.html';
+            });
+        }
+
+        // Function to add a new schedule slot row (NEW TUTOR LOGIC)
+        function addScheduleSlot() {
+            const template = document.getElementById('availability-slot-template');
+            const container = document.getElementById('schedule-slots-container');
+            const clone = document.importNode(template.content, true);
+            
+            // Attach remove listener to the cloned button
+            const removeBtn = clone.querySelector('.remove-slot');
+            removeBtn.addEventListener('click', function() {
+                this.closest('.form-row').remove();
+            });
+            
+            container.appendChild(clone);
+        }
+    </script>
+    
+    <script>
+        const applicationForm = document.getElementById('tutorApplicationForm');
+        const applicationModal = document.getElementById('tutor-application-modal');
+        const submitAppBtn = document.getElementById('submit-application-btn');
+        const submitAppText = document.getElementById('submit-application-text');
+        const submitAppSpinner = document.getElementById('submit-application-spinner');
+        
+        async function handleTutorApplicationSubmit(event) {
+            event.preventDefault(); 
+            const userRaw = localStorage.getItem('aurak_user');
+            if (!userRaw) {
+                showToast("Please log in before applying.", 'error');
+                return;
+            }
+            const user = JSON.parse(userRaw);
+            
+            submitAppBtn.disabled = true;
+            submitAppText.textContent = 'Submitting...';
+            submitAppSpinner.style.display = 'inline-block';
+
+            const applicationData = {
+                user_id: user.id, 
+                major: document.getElementById('major').value,
+                gpa: parseFloat(document.getElementById('gpa').value),
+                courses_to_tutor: document.getElementById('courses_to_tutor').value,
+                motivation_essay: document.getElementById('motivation_essay').value
+            };
+
+            try {
+                const response = await fetch('/SE.PROJECT/api/user/apply_tutor.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(applicationData)
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    closeModal(applicationModal);
+                    
+                    user.role = 'Tutor';
+                    user.tutor_status = 'Pending';
+                    user.applied_date = new Date().toLocaleDateString();
+                    localStorage.setItem('aurak_user', JSON.stringify(user));
+                    
+                    window.location.reload(); 
+                } else {
+                    showToast('Application failed: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showToast('A network error occurred. Check server status.', 'error');
+            } finally {
+                submitAppBtn.disabled = false;
+                submitAppText.textContent = 'Submit Application';
+                submitAppSpinner.style.display = 'none';
+            }
+        }
+        
+        if (applicationForm) {
+            applicationForm.addEventListener('submit', handleTutorApplicationSubmit);
+        }
+    </script>
+
+    <script>
+        // Function to handle Approval/Rejection action (Peer Tutors)
+        async function handleTutorApproval(userId, action) {
+            if (!confirm(`Are you sure you want to ${action} user ID ${userId}?`)) {
+                return;
+            }
+            
+            const itemElement = document.querySelector(`.application-item[data-user-id="${userId}"]`);
+            const actionButtons = itemElement.querySelector('.app-actions');
+            
+            const originalButtonsHTML = actionButtons.innerHTML;
+            actionButtons.innerHTML = `<div class="loading-spinner" style="margin: 0 15px;"></div>`;
+
+            try {
+                const data = await DashboardAPI.postTutorApproval(userId, action); 
+
+                if (data.success) {
+                    showToast(`Application ${action}ed successfully.`, 'success');
+                    itemElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    itemElement.style.opacity = '0';
+                    itemElement.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        itemElement.remove(); 
+                        const pendingCount = document.getElementById('pending-count');
+                        pendingCount.textContent = parseInt(pendingCount.textContent) - 1;
+                        if(parseInt(pendingCount.textContent) === 0) {
+                             document.getElementById('pending-applications-list').innerHTML = '<p style="text-align: center; padding: 20px;">No pending tutor applications at this time. 🎉</p>';
+                        }
+                    }, 500);
+
+                } else {
+                    showToast(`Error ${action}ing application: ${data.message}`, 'error');
+                    actionButtons.innerHTML = originalButtonsHTML; // Rollback
+                    itemElement.querySelector('.approve-btn').onclick = () => handleTutorApproval(userId, 'approve');
+                    itemElement.querySelector('.reject-btn').onclick = () => handleTutorApproval(userId, 'reject');
+                }
+            } catch (error) {
+                showToast('API call failed. Server error.', 'error');
+                actionButtons.innerHTML = originalButtonsHTML; // Rollback
+                itemElement.querySelector('.approve-btn').onclick = () => handleTutorApproval(userId, 'approve');
+                itemElement.querySelector('.reject-btn').onclick = () => handleTutorApproval(userId, 'reject');
+            }
+        }
+        
+        // Function to handle Public Request actions (Assign/Close)
+        async function handlePublicRequestAction(requestId, action) {
+            if (!confirm(`Are you sure you want to ${action.toUpperCase()} Request ID ${requestId}?`)) {
+                return;
+            }
+            
+            const itemElement = document.querySelector(`.request-item[data-request-id="${requestId}"]`);
+            const actionButtons = itemElement.querySelector('.req-actions');
+            
+            // Save original buttons for rollback
+            const originalButtonsHTML = actionButtons.innerHTML;
+            actionButtons.innerHTML = `<div class="loading-spinner" style="margin: 0 15px;"></div>`;
+            
+            // --- 'CLOSE REQUEST' LOGIC (Final call) ---
+            try {
+                // Call final PHP endpoint to update status to Closed
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+                
+                showToast(`Request ${requestId} successfully marked as Closed.`, 'success');
+                
+                // UI removal upon successful backend update
+                itemElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                itemElement.style.opacity = '0';
+                itemElement.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    itemElement.remove();
+                }, 500);
+
+            } catch (error) {
+                showToast('Error processing request status.', 'error');
+                actionButtons.innerHTML = originalButtonsHTML; // Rollback
+            }
+        }
+
+
+        // Function to fetch and render pending peer tutors (Tutor Applications)
+        async function fetchPendingTutors() {
+            const listContainer = document.getElementById('pending-applications-list');
+            const loadingMessage = document.getElementById('loading-applications');
+            const countSpan = document.getElementById('pending-count');
+            
+            listContainer.innerHTML = ''; 
+            loadingMessage.style.display = 'block';
+
+            try {
+                const data = await DashboardAPI.getPendingTutors(); 
+                const applications = data.data || [];
+                
+                loadingMessage.style.display = 'none';
+                countSpan.textContent = applications.length;
+                
+                if (applications.length === 0) {
+                    listContainer.innerHTML = '<p style="text-align: center; padding: 20px;">No pending tutor applications at this time. 🎉</p>';
+                    return;
+                }
+
+                const template = document.getElementById('application-template');
+
+                applications.forEach(app => {
+                    const clone = document.importNode(template.content, true);
+                    const item = clone.querySelector('.application-item');
+                    
+                    item.setAttribute('data-user-id', app.user_id);
+                    
+                    clone.querySelector('.app-name').textContent = `${app.first_name} ${app.last_name}`;
+                    clone.querySelector('.app-major').textContent = ` - ${app.major}`;
+                    clone.querySelector('.app-gpa').textContent = `GPA: ${app.gpa}`;
+                    clone.querySelector('.app-courses').textContent = app.courses_to_tutor;
+                    clone.querySelector('.app-essay').textContent = app.motivation_essay.substring(0, 300) + (app.motivation_essay.length > 300 ? '...' : '');
+                    clone.querySelector('.app-date').textContent = new Date(app.applied_at).toLocaleDateString();
+
+                    // Add dynamic buttons and listeners
+                    const actionsDiv = clone.querySelector('.app-actions');
+                    actionsDiv.innerHTML = `
+                        <button class="submit-btn approve-btn" style="padding: 8px 12px; font-size: 14px; background: var(--success-green);">Approve</button>
+                        <button class="submit-btn reject-btn" style="padding: 8px 12px; font-size: 14px; background: var(--warning-orange);">Reject</button>
+                    `;
+                    actionsDiv.querySelector('.approve-btn').onclick = () => handleTutorApproval(app.user_id, 'approve');
+                    actionsDiv.querySelector('.reject-btn').onclick = () => handleTutorApproval(app.user_id, 'reject');
+                    
+                    listContainer.appendChild(clone);
+                });
+
+            } catch (error) {
+                loadingMessage.textContent = 'Error loading applications. Check API endpoint.';
+                console.error("Failed to load pending tutors:", error);
+            }
+        }
+        
+        // Function to fetch and render Public Requests
+        async function fetchPublicRequests() {
+            const listContainer = document.getElementById('public-requests-list');
+            if (!listContainer) return;
+
+            listContainer.innerHTML = '<p style="text-align: center;">Loading public requests...</p>';
+
+            try {
+                const data = await DashboardAPI.getPublicRequests(); 
+                const requests = data.data || [];
+                
+                listContainer.innerHTML = '';
+                
+                if (requests.length === 0) {
+                    listContainer.innerHTML = '<p style="text-align: center; padding: 20px;">No public tutor requests at this time. ✅</p>';
+                    return;
+                }
+
+                const template = document.getElementById('public-request-template');
+
+                requests.forEach(req => {
+                    const clone = document.importNode(template.content, true);
+                    const item = clone.querySelector('.request-item');
+                    
+                    item.setAttribute('data-request-id', req.id);
+                    
+                    clone.querySelector('.req-name').textContent = req.student_name;
+                    clone.querySelector('.req-email').textContent = req.student_email;
+                    clone.querySelector('.req-course-tag').textContent = req.course_code;
+                    clone.querySelector('.req-topic').textContent = req.topic_details || 'N/A';
+                    clone.querySelector('.req-date').textContent = new Date(req.request_date).toLocaleDateString();
+
+                    // Add action buttons
+                    const actionsDiv = clone.querySelector('.req-actions');
+                    // CRITICAL FIX: Ensure string parameters are quoted in the onclick call
+                    actionsDiv.innerHTML = `
+                        <button onclick="openAssignmentModal(${req.id}, '${req.course_code}', '${req.student_name}')" class="submit-btn assign-btn" style="padding: 8px 12px; font-size: 14px; background: var(--primary-blue);">Assign Tutor</button>
+                        <button onclick="handlePublicRequestAction(${req.id}, 'close')" class="submit-btn close-btn" style="padding: 8px 12px; font-size: 14px; background: var(--dark-gray);">Close Request</button>
+                    `;
+                    
+                    listContainer.appendChild(clone);
+                });
+
+            } catch (error) {
+                listContainer.innerHTML = '<p style="text-align: center; color: var(--primary-red);">Error loading public requests. Check PHP endpoint: /admin/get_public_requests.php</p>';
+                console.error("Failed to load public requests:", error);
+            }
+        }
+        
+        // Helper function to open the modal and populate data
+        function openAssignmentModal(requestId, courseCode, studentName) {
+            const modal = document.getElementById('assign-tutor-modal');
+            
+            document.getElementById('current-request-id').value = requestId;
+            
+            const detailElement = document.getElementById('assignment-request-details');
+            if (detailElement) detailElement.innerHTML = `Request from: <strong>${studentName}</strong>`;
+            
+            const courseElement = document.getElementById('assignment-course');
+            if (courseElement) courseElement.textContent = courseCode;
+            
+            populateTutorSelect(courseCode);
+            openModal(modal);
+        }
+
+        // Function to populate the tutor dropdown
+        // Function to populate the tutor dropdown
+// Function to populate the tutor dropdown
+async function populateTutorSelect(courseCode) {
+    const select = document.getElementById('tutor-select');
+    if (!select) {
+        console.error('Tutor select element not found');
+        return;
+    }
+
+    select.innerHTML = '<option value="">Loading Tutors...</option>';
+    select.disabled = true;
+
+    try {
+        console.log('[populateTutorSelect] Fetching tutors for course:', courseCode);
+        const data = await DashboardAPI.getAvailableTutors(courseCode);
+        console.log('[populateTutorSelect] Full API response:', JSON.stringify(data, null, 2));
+
+        // Handle different response formats
+        let tutorList = [];
+        if (data && data.success !== false) {
+            tutorList = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+        } else {
+            console.error('[populateTutorSelect] API returned error:', data);
+            select.innerHTML = '<option value="">Error: ' + (data?.message || 'Failed to load tutors') + '</option>';
+            select.disabled = true;
+            return;
+        }
+
+        console.log('[populateTutorSelect] Tutor list:', tutorList);
+
+        if (!tutorList.length) {
+            select.innerHTML = '<option value="">No Approved Tutors Available for ' + courseCode + '</option>';
+            select.disabled = false;
+            return;
+        }
+
+        let options = `<option value="">-- Select Tutor for ${courseCode} --</option>`;
+
+        tutorList.forEach(tutor => {
+            const id     = tutor.tutor_id || tutor.id || tutor.user_id;
+            const name   = tutor.full_name || tutor.name || 'Unknown Tutor';
+            const email  = tutor.email || '';
+            const subject = tutor.course || tutor.primary_subject || tutor.subjects || '';
+
+            if (!id) {
+                console.warn('[populateTutorSelect] Skipping tutor without ID:', tutor);
+                return;
+            }
+
+            const labelParts = [name];
+            if (subject && subject !== '[]') labelParts.push(subject);
+            if (email) labelParts.push(email);
+
+            options += `<option value="${id}">${labelParts.join(' - ')}</option>`;
+        });
+
+        select.innerHTML = options;
+        select.disabled = false;
+        console.log('[populateTutorSelect] Successfully populated', tutorList.length, 'tutors');
+
+    } catch (error) {
+        console.error('[populateTutorSelect] Exception:', error);
+        select.innerHTML = '<option value="">Error loading tutors: ' + error.message + '</option>';
+        select.disabled = true;
+    }
+}
+
+
+
+        // Function to handle the final assignment submission
+        async function handleAssignmentFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = document.getElementById('confirm-assignment-btn');
+            const originalText = submitBtn.textContent;
+            
+            const requestId = document.getElementById('current-request-id').value;
+            const tutorId = document.getElementById('tutor-select').value;
+            const notes = document.getElementById('assignment-notes').value;
+
+            if (!tutorId) {
+                showToast("Please select a tutor.", 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Assigning...';
+
+            try {
+                // Call the final PHP endpoint to finalize the assignment (set public_request status, log assignment)
+                const data = await DashboardAPI.request('/admin/finalize_assignment.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        request_id: requestId, 
+                        tutor_id: tutorId, 
+                        notes: notes
+                    })
+                });
+
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    
+                    // Manually remove the item from the main Admin list after assignment
+                    const itemToRemove = document.querySelector(`.request-item[data-request-id="${requestId}"]`);
+                    if (itemToRemove) itemToRemove.remove();
+
+                    closeModal(document.getElementById('assign-tutor-modal'));
+
+                } else {
+                     showToast(`Assignment Failed: ${data.message}`, 'error');
+                }
+
+            } catch (error) {
+                showToast('API call failed. Server error during assignment.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                fetchPublicRequests(); // Refresh the list
+            }
+        }
+        async function loadPendingSessions() {
+    const listEl = document.getElementById('pending-sessions-list');
+    if (!listEl) return;
+
+    listEl.innerHTML = '<p style="color: var(--dark-gray);">Loading pending requests...</p>';
+
+    try {
+        const res = await fetch('api/tutors/get_pending_sessions.php', {
+            credentials: 'include'
+        });
+
+        const raw = await res.text();
+        console.log('RAW pending sessions:', raw);
+
+        const data = JSON.parse(raw);
+        console.log('parsed pending sessions:', data);
+
+        if (!data.success) {
+            listEl.innerHTML = '<p style="color: red;">Could not load pending sessions.</p>';
+            return;
+        }
+
+        const sessions = data.data || [];
+        if (sessions.length === 0) {
+            listEl.innerHTML = '<p style="color: var(--dark-gray);">No pending requests yet.</p>';
+            return;
+        }
+
+        listEl.innerHTML = '';
+
+        sessions.forEach(s => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pending-session-item';
+            wrapper.style.borderBottom = '1px solid var(--light-gray)';
+            wrapper.style.padding = '10px 0';
+
+            const when   = s.scheduled_at || '(unscheduled)';
+            const course = s.course_code || '-';
+            const notes  = s.notes || '—';
+
+            wrapper.innerHTML = `
+                <div><strong>Course:</strong> ${course}</div>
+                <div><strong>Student ID:</strong> ${s.student_id}</div>
+                <div><strong>When:</strong> ${when}</div>
+                <div><strong>Notes:</strong> ${notes}</div>
+                <div style="margin-top: 8px;">
+                    <button class="small-btn btn-approve" data-session-id="${s.id}">
+                        ✅ Approve
+                    </button>
+                    <button class="small-btn btn-reject" data-session-id="${s.id}" style="margin-left: 6px; background-color:#eee;">
+                        ❌ Reject
+                    </button>
+                </div>
+            `;
+
+            listEl.appendChild(wrapper);
+        });
+
+    } catch (err) {
+        console.error(err);
+        listEl.innerHTML = '<p style="color: red;">Error loading pending sessions.</p>';
+    }
+}
+
+// Load Student Upcoming Sessions
+async function loadStudentUpcomingSessions() {
+    const container = document.getElementById('student-upcoming-sessions');
+    if (!container) return;
+    
+    container.innerHTML = '<p style="color: var(--dark-gray);">Loading upcoming sessions...</p>';
+    
+    try {
+        const data = await DashboardAPI.getStudentUpcomingSessions();
+        const sessions = data.data || [];
+        
+        if (sessions.length === 0) {
+            container.innerHTML = '<p style="color: var(--dark-gray);">No upcoming sessions scheduled.</p>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        sessions.forEach(session => {
+            const sessionCard = document.createElement('div');
+            sessionCard.className = 'session-card';
+            sessionCard.style.cssText = 'border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: var(--bg-card);';
+            
+            const scheduledDate = new Date(session.scheduled_at);
+            const dateStr = scheduledDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            sessionCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h4 style="margin: 0 0 8px 0; color: var(--primary-red);">
+                            <i class="fas fa-book"></i> ${session.course_code || 'N/A'}
+                        </h4>
+                        <p style="margin: 5px 0; color: var(--dark-gray);">
+                            <i class="fas fa-user-tie"></i> Tutor: ${session.tutor_name || 'TBA'}
+                        </p>
+                        <p style="margin: 5px 0; color: var(--dark-gray);">
+                            <i class="fas fa-calendar"></i> ${dateStr} at ${timeStr}
+                        </p>
+                        <p style="margin: 5px 0; color: var(--dark-gray);">
+                            <i class="fas fa-map-marker-alt"></i> ${session.location || 'Online'}
+                        </p>
+                        ${session.notes ? `<p style="margin: 5px 0; color: var(--dark-gray); font-size: 14px;"><em>${session.notes}</em></p>` : ''}
+                        <span class="course-tag" style="background-color: ${session.status === 'confirmed' ? 'var(--success-green)' : session.status === 'pending' ? 'var(--warning-orange)' : 'var(--primary-blue)'}; margin-top: 8px; display: inline-block;">
+                            ${session.status || 'pending'}
+                        </span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(sessionCard);
+        });
+    } catch (error) {
+        console.error('Error loading upcoming sessions:', error);
+        container.innerHTML = '<p style="color: red;">Error loading upcoming sessions.</p>';
+    }
+}
+
+// Load Student Sessions for Messages
+async function loadStudentSessionsForMessages() {
+    const container = document.getElementById('messages-sessions-list');
+    if (!container) {
+        console.error('Messages sessions list container not found');
+        return;
+    }
+    
+    container.innerHTML = '<p style="color: var(--dark-gray);">Loading sessions...</p>';
+    
+    try {
+        console.log('Loading student sessions for messages...');
+        const data = await DashboardAPI.getStudentUpcomingSessions();
+        console.log('Student sessions API response:', data);
+        const sessions = data.data || [];
+        
+        console.log('Found sessions:', sessions.length);
+        
+        if (sessions.length === 0) {
+            container.innerHTML = '<p style="color: var(--dark-gray);">No sessions available for messaging. Request a tutoring session first.</p>';
+            return;
+        }
+        
+        container.innerHTML = '<p style="color: var(--dark-gray); font-size: 14px; margin-bottom: 10px;">Select a session to view messages:</p>';
+        sessions.forEach(session => {
+            if (!session.id) {
+                console.warn('Session missing ID:', session);
+                return;
+            }
+            
+            const btn = document.createElement('button');
+            btn.className = 'submit-btn';
+            btn.style.cssText = 'width: 100%; margin-bottom: 8px; text-align: left; background-color: var(--primary-blue); padding: 12px; cursor: pointer;';
+            btn.innerHTML = `
+                <i class="fas fa-comments"></i> ${session.course_code || 'Session'} - ${session.tutor_name || 'Tutor'}
+            `;
+            btn.onclick = () => {
+                console.log('Opening chat for session:', session);
+                openMessagesChat(session.id, session.tutor_id, session.course_code, session.tutor_name, 'student');
+            };
+            container.appendChild(btn);
+        });
+        
+        console.log('Successfully loaded', sessions.length, 'sessions for messaging');
+    } catch (error) {
+        console.error('Error loading sessions for messages:', error);
+        container.innerHTML = '<p style="color: red;">Error loading sessions: ' + (error.message || 'Unknown error') + '</p>';
+    }
+}
+
+// Load Tutor Upcoming Sessions
+async function loadTutorUpcomingSessions() {
+    // Add this section to tutor view if it doesn't exist
+    let container = document.getElementById('tutor-upcoming-sessions');
+    if (!container) {
+        const approvedView = document.getElementById('approved-tutor-view');
+        if (approvedView) {
+            const moduleCard = document.createElement('div');
+            moduleCard.className = 'module-card';
+            moduleCard.innerHTML = `
+                <h2><i class="fas fa-calendar-check"></i> Upcoming Sessions</h2>
+                <div id="tutor-upcoming-sessions"></div>
+            `;
+            approvedView.insertBefore(moduleCard, approvedView.querySelector('.module-card:nth-child(3)'));
+            container = document.getElementById('tutor-upcoming-sessions');
+        }
+    }
+    if (!container) return;
+    
+    container.innerHTML = '<p style="color: var(--dark-gray);">Loading upcoming sessions...</p>';
+    
+    try {
+        const data = await DashboardAPI.getTutorUpcomingSessions();
+        const sessions = data.data || [];
+        
+        if (sessions.length === 0) {
+            container.innerHTML = '<p style="color: var(--dark-gray);">No upcoming sessions scheduled.</p>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        sessions.forEach(session => {
+            const sessionCard = document.createElement('div');
+            sessionCard.className = 'session-card';
+            sessionCard.style.cssText = 'border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: var(--bg-card);';
+            
+            const scheduledDate = new Date(session.scheduled_at);
+            const dateStr = scheduledDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = scheduledDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            sessionCard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h4 style="margin: 0 0 8px 0; color: var(--primary-red);">
+                            <i class="fas fa-book"></i> ${session.course_code || 'N/A'}
+                        </h4>
+                        <p style="margin: 5px 0; color: var(--dark-gray);">
+                            <i class="fas fa-user"></i> Student: ${session.student_name || 'TBA'}
+                        </p>
+                        <p style="margin: 5px 0; color: var(--dark-gray);">
+                            <i class="fas fa-calendar"></i> ${dateStr} at ${timeStr}
+                        </p>
+                        <p style="margin: 5px 0; color: var(--dark-gray);">
+                            <i class="fas fa-map-marker-alt"></i> ${session.location || 'Online'}
+                        </p>
+                        ${session.notes ? `<p style="margin: 5px 0; color: var(--dark-gray); font-size: 14px;"><em>${session.notes}</em></p>` : ''}
+                        <span class="course-tag" style="background-color: ${session.status === 'confirmed' ? 'var(--success-green)' : session.status === 'pending' ? 'var(--warning-orange)' : 'var(--primary-blue)'}; margin-top: 8px; display: inline-block;">
+                            ${session.status || 'pending'}
+                        </span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(sessionCard);
+        });
+    } catch (error) {
+        console.error('Error loading upcoming sessions:', error);
+        container.innerHTML = '<p style="color: red;">Error loading upcoming sessions.</p>';
+    }
+}
+
+// Load Tutor Sessions for Messages
+async function loadTutorSessionsForMessages() {
+    // Add messages section to tutor view if it doesn't exist
+    let container = document.getElementById('tutor-messages-sessions-list');
+    if (!container) {
+        const approvedView = document.getElementById('approved-tutor-view');
+        if (approvedView) {
+            const moduleCard = document.createElement('div');
+            moduleCard.className = 'module-card';
+            moduleCard.innerHTML = `
+                <h2><i class="fas fa-comments"></i> Messages</h2>
+                <div id="tutor-messages-container">
+                    <div id="tutor-messages-sessions-list" style="margin-bottom: 15px;">
+                        <p style="color: var(--dark-gray); font-size: 14px;">Select a session to view messages</p>
+                    </div>
+                    <div id="tutor-messages-chat-area" style="display: none;">
+                        <div id="tutor-messages-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <strong id="tutor-messages-session-title"></strong>
+                                <p style="font-size: 12px; color: var(--dark-gray); margin-top: 5px;" id="tutor-messages-session-info"></p>
+                            </div>
+                            <button onclick="closeTutorMessagesChat()" class="submit-btn" style="background-color: var(--dark-gray); padding: 8px 15px; font-size: 14px;">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                        </div>
+                        <div id="tutor-messages-list" style="height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; background-color: var(--bg-card);">
+                            <p style="color: var(--dark-gray); text-align: center;">Loading messages...</p>
+                        </div>
+                        <form id="tutor-send-message-form" style="display: flex; gap: 10px;">
+                            <input type="hidden" id="tutor-current-session-id">
+                            <input type="hidden" id="tutor-current-receiver-id">
+                            <input type="text" id="tutor-message-input" placeholder="Type your message..." required style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <button type="submit" class="submit-btn" style="background-color: var(--primary-blue); padding: 10px 20px;">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            approvedView.appendChild(moduleCard);
+            container = document.getElementById('tutor-messages-sessions-list');
+        }
+    }
+    if (!container) return;
+    
+    try {
+        const data = await DashboardAPI.getTutorUpcomingSessions();
+        const sessions = data.data || [];
+        
+        if (sessions.length === 0) {
+            container.innerHTML = '<p style="color: var(--dark-gray);">No sessions available for messaging.</p>';
+            return;
+        }
+        
+        container.innerHTML = '<p style="color: var(--dark-gray); font-size: 14px; margin-bottom: 10px;">Select a session to view messages:</p>';
+        sessions.forEach(session => {
+            const btn = document.createElement('button');
+            btn.className = 'submit-btn';
+            btn.style.cssText = 'width: 100%; margin-bottom: 8px; text-align: left; background-color: var(--primary-blue); padding: 12px;';
+            btn.innerHTML = `
+                <i class="fas fa-comments"></i> ${session.course_code || 'Session'} - ${session.student_name || 'Student'}
+            `;
+            btn.onclick = () => openTutorMessagesChat(session.id, session.student_id, session.course_code, session.student_name);
+            container.appendChild(btn);
+        });
+    } catch (error) {
+        console.error('Error loading sessions for messages:', error);
+        container.innerHTML = '<p style="color: red;">Error loading sessions.</p>';
+    }
+}
+
+// Global variable to track message polling intervals
+let studentMessagePollInterval = null;
+let tutorMessagePollInterval = null;
+
+// Open Messages Chat (Student)
+async function openMessagesChat(sessionId, receiverId, courseCode, tutorName, role) {
+    // Clear any existing polling
+    if (studentMessagePollInterval) {
+        clearInterval(studentMessagePollInterval);
+        studentMessagePollInterval = null;
+    }
+    
+    document.getElementById('messages-sessions-list').style.display = 'none';
+    document.getElementById('messages-chat-area').style.display = 'block';
+    document.getElementById('current-session-id').value = sessionId;
+    document.getElementById('current-receiver-id').value = receiverId;
+    document.getElementById('messages-session-title').textContent = `${courseCode} - ${tutorName}`;
+    document.getElementById('messages-session-info').textContent = `Session ID: ${sessionId}`;
+    
+    lastStudentMessageIds = []; // Reset message tracking
+    currentStudentSessionId = sessionId;
+    await loadMessages(sessionId, role);
+    
+    // Start auto-refresh every 3 seconds
+    studentMessagePollInterval = setInterval(async () => {
+        console.log('Auto-refreshing student messages for session:', sessionId);
+        await loadMessages(sessionId, role);
+    }, 3000);
+}
+
+// Close Messages Chat (Student)
+function closeMessagesChat() {
+    // Stop message polling
+    if (studentMessagePollInterval) {
+        clearInterval(studentMessagePollInterval);
+        studentMessagePollInterval = null;
+    }
+    
+    document.getElementById('messages-sessions-list').style.display = 'block';
+    document.getElementById('messages-chat-area').style.display = 'none';
+    document.getElementById('messages-list').innerHTML = '';
+}
+
+// Open Messages Chat (Tutor)
+async function openTutorMessagesChat(sessionId, receiverId, courseCode, studentName) {
+    // Clear any existing polling
+    if (tutorMessagePollInterval) {
+        clearInterval(tutorMessagePollInterval);
+        tutorMessagePollInterval = null;
+    }
+    
+    const sessionsList = document.getElementById('tutor-messages-sessions-list');
+    const chatArea = document.getElementById('tutor-messages-chat-area');
+    const sessionIdInput = document.getElementById('tutor-current-session-id');
+    const receiverIdInput = document.getElementById('tutor-current-receiver-id');
+    const sessionTitle = document.getElementById('tutor-messages-session-title');
+    const sessionInfo = document.getElementById('tutor-messages-session-info');
+    
+    if (!sessionsList || !chatArea || !sessionIdInput || !receiverIdInput || !sessionTitle || !sessionInfo) {
+        console.error('Tutor messages chat elements not found');
+        showToast('Error: Messages interface not ready', 'error');
+        return;
+    }
+    
+    sessionsList.style.display = 'none';
+    chatArea.style.display = 'block';
+    sessionIdInput.value = sessionId;
+    receiverIdInput.value = receiverId;
+    sessionTitle.textContent = `${courseCode} - ${studentName}`;
+    sessionInfo.textContent = `Session ID: ${sessionId}`;
+    
+    console.log('Opening tutor messages chat:', { sessionId, receiverId, courseCode, studentName });
+    lastTutorMessageCount = 0; // Reset message count
+    await loadTutorMessages(sessionId);
+    
+    // Start auto-refresh every 3 seconds
+    tutorMessagePollInterval = setInterval(async () => {
+        await loadTutorMessages(sessionId);
+    }, 3000);
+}
+
+// Close Messages Chat (Tutor)
+function closeTutorMessagesChat() {
+    // Stop message polling
+    if (tutorMessagePollInterval) {
+        clearInterval(tutorMessagePollInterval);
+        tutorMessagePollInterval = null;
+    }
+    
+    document.getElementById('tutor-messages-sessions-list').style.display = 'block';
+    document.getElementById('tutor-messages-chat-area').style.display = 'none';
+    document.getElementById('tutor-messages-list').innerHTML = '';
+}
+
+// Load Messages (Student) - with scroll preservation
+let lastStudentMessageIds = [];
+let currentStudentSessionId = null;
+async function loadMessages(sessionId, role = 'student') {
+    const messagesList = document.getElementById('messages-list');
+    if (!messagesList) return;
+    
+    // Reset tracking if session changed
+    if (currentStudentSessionId !== sessionId) {
+        lastStudentMessageIds = [];
+        currentStudentSessionId = sessionId;
+    }
+    
+    const wasAtBottom = messagesList.scrollHeight - messagesList.scrollTop <= messagesList.clientHeight + 50;
+    
+    try {
+        console.log('Fetching messages for session:', sessionId, 'role:', role);
+        const data = await DashboardAPI.getMessages(sessionId, role);
+        console.log('Messages API response:', data);
+        const messages = data.data || [];
+        const currentUserId = JSON.parse(localStorage.getItem('aurak_user') || '{}').id;
+        console.log('Current user ID:', currentUserId, 'Messages received:', messages.length);
+        
+        // Check if we have new messages by comparing IDs
+        const currentMessageIds = messages.map(m => String(m.id || m.created_at));
+        const currentMessageIdsStr = currentMessageIds.join(',');
+        const lastMessageIdsStr = lastStudentMessageIds.join(',');
+        const hasNewMessages = currentMessageIdsStr !== lastMessageIdsStr;
+        
+        console.log('Student messages check:', {
+            currentCount: messages.length,
+            lastCount: lastStudentMessageIds.length,
+            hasNewMessages: hasNewMessages,
+            currentIds: currentMessageIdsStr.substring(0, 100),
+            lastIds: lastMessageIdsStr.substring(0, 100)
+        });
+        
+        // Always update if:
+        // 1. List is empty (first load)
+        // 2. We have new messages
+        // 3. Last message IDs array is empty (first load)
+        const shouldUpdate = messagesList.children.length === 0 || 
+                            hasNewMessages || 
+                            lastStudentMessageIds.length === 0;
+        
+        if (!shouldUpdate) {
+            console.log('No new messages, skipping update');
+            return; // No new messages, skip update
+        }
+        
+        console.log('Updating student messages display');
+        lastStudentMessageIds = currentMessageIds;
+        
+        // Clear and rebuild messages list
+        messagesList.innerHTML = '';
+        if (messages.length === 0) {
+            messagesList.innerHTML = '<p style="color: var(--dark-gray); text-align: center;">No messages yet. Start the conversation!</p>';
+            return;
+        }
+        
+        messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.style.cssText = `margin-bottom: 15px; padding: 10px; border-radius: 8px; max-width: 70%; ${msg.sender_id == currentUserId ? 'background-color: var(--primary-blue); color: white; margin-left: auto;' : 'background-color: var(--light-gray); margin-right: auto;'}`;
+            
+            const time = new Date(msg.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            msgDiv.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 5px; font-size: 12px;">${msg.sender_name || 'Unknown'}</div>
+                <div>${msg.message}</div>
+                <div style="font-size: 11px; opacity: 0.7; margin-top: 5px;">${time}</div>
+            `;
+            messagesList.appendChild(msgDiv);
+        });
+        
+        // Scroll to bottom if user was at bottom or if we have new messages
+        if (wasAtBottom || hasNewMessages) {
+            setTimeout(() => {
+                messagesList.scrollTop = messagesList.scrollHeight;
+            }, 100);
+        }
+    } catch (error) {
+        console.error('Error loading messages:', error);
+        if (messagesList.children.length === 0) {
+            messagesList.innerHTML = '<p style="color: red; text-align: center;">Error loading messages.</p>';
+        }
+    }
+}
+
+// Load Messages (Tutor) - with scroll preservation
+let lastTutorMessageCount = 0;
+async function loadTutorMessages(sessionId) {
+    const messagesList = document.getElementById('tutor-messages-list');
+    if (!messagesList) return;
+    
+    const wasAtBottom = messagesList.scrollHeight - messagesList.scrollTop <= messagesList.clientHeight + 50;
+    
+    try {
+        const data = await DashboardAPI.getMessages(sessionId, 'tutor');
+        const messages = data.data || [];
+        const currentUserId = JSON.parse(localStorage.getItem('aurak_user') || '{}').id;
+        
+        // Only update if messages changed
+        if (messages.length === lastTutorMessageCount && messagesList.children.length > 0) {
+            return; // No new messages
+        }
+        lastTutorMessageCount = messages.length;
+        
+        messagesList.innerHTML = '';
+        if (messages.length === 0) {
+            messagesList.innerHTML = '<p style="color: var(--dark-gray); text-align: center;">No messages yet. Start the conversation!</p>';
+            return;
+        }
+        
+        messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.style.cssText = `margin-bottom: 15px; padding: 10px; border-radius: 8px; max-width: 70%; ${msg.sender_id == currentUserId ? 'background-color: var(--primary-blue); color: white; margin-left: auto;' : 'background-color: var(--light-gray); margin-right: auto;'}`;
+            
+            const time = new Date(msg.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            msgDiv.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 5px; font-size: 12px;">${msg.sender_name || 'Unknown'}</div>
+                <div>${msg.message}</div>
+                <div style="font-size: 11px; opacity: 0.7; margin-top: 5px;">${time}</div>
+            `;
+            messagesList.appendChild(msgDiv);
+        });
+        
+        // Scroll to bottom if user was at bottom, or if new message from other person
+        if (wasAtBottom || messages.length > 0) {
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }
+    } catch (error) {
+        console.error('Error loading messages:', error);
+        if (messagesList.children.length === 0) {
+            messagesList.innerHTML = '<p style="color: red; text-align: center;">Error loading messages.</p>';
+        }
+    }
+}
+
+// Send Message Form Handler (Student) - Using event delegation
+document.addEventListener('submit', async (e) => {
+    // Student message form
+    if (e.target.id === 'send-message-form') {
+        e.preventDefault();
+        const sessionIdEl = document.getElementById('current-session-id');
+        const receiverIdEl = document.getElementById('current-receiver-id');
+        const messageInput = document.getElementById('message-input');
+        
+        if (!sessionIdEl || !receiverIdEl || !messageInput) {
+            console.error('Student message form elements not found');
+            showToast('Error: Message form not ready', 'error');
+            return;
+        }
+        
+        const sessionId = sessionIdEl.value;
+        const receiverId = receiverIdEl.value;
+        const message = messageInput.value.trim();
+        
+        if (!message) {
+            showToast('Please enter a message', 'error');
+            return;
+        }
+        
+        if (!sessionId || !receiverId) {
+            console.error('Missing required fields:', { sessionId, receiverId, message });
+            showToast('Error: Session or receiver information missing', 'error');
+            return;
+        }
+        
+        console.log('Sending student message:', { sessionId, receiverId, message });
+        
+        try {
+            const result = await DashboardAPI.sendMessage(sessionId, receiverId, message, 'student');
+            console.log('Message sent successfully:', result);
+            messageInput.value = '';
+            await loadMessages(sessionId, 'student');
+            showToast('Message sent successfully', 'success');
+        } catch (error) {
+            console.error('Error sending student message:', error);
+            showToast('Failed to send message: ' + (error.message || 'Unknown error'), 'error');
+        }
+    }
+    
+    // Tutor message form
+    if (e.target.id === 'tutor-send-message-form') {
+        e.preventDefault();
+        const sessionIdEl = document.getElementById('tutor-current-session-id');
+        const receiverIdEl = document.getElementById('tutor-current-receiver-id');
+        const messageInput = document.getElementById('tutor-message-input');
+        
+        if (!sessionIdEl || !receiverIdEl || !messageInput) {
+            console.error('Tutor message form elements not found');
+            showToast('Error: Message form not ready', 'error');
+            return;
+        }
+        
+        const sessionId = sessionIdEl.value;
+        const receiverId = receiverIdEl.value;
+        const message = messageInput.value.trim();
+        
+        if (!message) {
+            showToast('Please enter a message', 'error');
+            return;
+        }
+        
+        if (!sessionId || !receiverId) {
+            console.error('Missing required fields:', { sessionId, receiverId, message });
+            showToast('Error: Session or receiver information missing', 'error');
+            return;
+        }
+        
+        console.log('Sending tutor message:', { sessionId, receiverId, message });
+        
+        try {
+            const result = await DashboardAPI.sendMessage(sessionId, receiverId, message, 'tutor');
+            console.log('Message sent successfully:', result);
+            messageInput.value = '';
+            await loadTutorMessages(sessionId);
+            showToast('Message sent successfully', 'success');
+        } catch (error) {
+            console.error('Error sending tutor message:', error);
+            showToast('Failed to send message: ' + (error.message || 'Unknown error'), 'error');
+        }
+    }
+});
+
+// detect base like in login.html (re-use same logic)
+const base = (function () {
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  return parts.length ? `/${parts[0]}` : '';
+})();
+
+async function submitSessionRequest() {
+  const tutor_id     = document.getElementById('request-tutor-select').value;
+  const course_code  = document.getElementById('request-course').value;
+  const meeting_date = document.getElementById('request-date').value;
+  const start_time   = document.getElementById('request-start').value;
+  const end_time     = document.getElementById('request-end').value || null;
+  const locationEl   = document.getElementById('request-location');
+  const location     = locationEl && locationEl.value.trim() !== ''
+                        ? locationEl.value.trim()
+                        : 'Online';
+  const notes        = document.getElementById('request-notes').value || '';
+  const msgEl        = document.getElementById('session-request-message');
+
+  if (!tutor_id || !course_code || !meeting_date || !start_time) {
+    msgEl.textContent = 'Please fill all required fields (course code, tutor selection, date, and start time).';
+    msgEl.style.color = 'red';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${base}/api/student/request_session.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        tutor_id,
+        course_code,
+        meeting_date,
+        start_time,
+        end_time,
+        location,   // 👈 now we send the chosen location
+        notes
+      })
+    });
+
+    const data = await res.json();
+    console.log('request_session response:', data);
+
+    if (res.ok && data.success) {
+      msgEl.textContent = '✅ Session request sent successfully!';
+      msgEl.style.color = 'green';
+      const form = document.getElementById('sessionRequestForm');
+      form.reset();
+      // Reset tutor dropdown
+      const tutorSelect = document.getElementById('request-tutor-select');
+      if (tutorSelect) {
+        tutorSelect.innerHTML = '<option value="">Loading tutors...</option>';
+        tutorSelect.disabled = true;
+        // Reload tutors after reset
+        setTimeout(() => loadAllTutorsForRequest(), 500);
+      }
+      const statusEl = document.getElementById('tutor-loading-status');
+      if (statusEl) {
+        statusEl.style.display = 'none';
+      }
+    } else {
+      msgEl.textContent = data.message || 'Failed to create session request.';
+      msgEl.style.color = 'red';
+    }
+  } catch (err) {
+    console.error(err);
+    msgEl.textContent = 'Network error while creating session.';
+    msgEl.style.color = 'red';
+  }
+}
+
+function initTutorSubjectManager(user) {
+    const form = document.getElementById('tutor-subject-form');
+    const listEl = document.getElementById('tutor-subject-list');
+    if (!form || !listEl || !user) return;
+
+    const statusEl = document.getElementById('tutor-subject-status');
+    const storageKey = `tutor_subjects_${user.id || user.email || 'guest'}`;
+
+    if (form.dataset.initialized === storageKey) {
+        return; // already wired for this user
+    }
+    form.dataset.initialized = storageKey;
+
+    let subjects = [];
+
+    const loadSubjects = () => {
+        try {
+            const raw = localStorage.getItem(storageKey);
+            subjects = raw ? JSON.parse(raw) : [];
+        } catch (error) {
+            console.warn('Failed to parse existing subjects', error);
+            subjects = [];
+        }
+    };
+
+    const saveSubjects = () => {
+        localStorage.setItem(storageKey, JSON.stringify(subjects));
+    };
+
+    const renderSubjects = () => {
+        listEl.innerHTML = '';
+        if (!subjects.length) {
+            listEl.innerHTML = '<p style="color: var(--dark-gray);">No subjects added yet. Use the form below to list courses you can cover.</p>';
+            return;
+        }
+
+        subjects.forEach((subject, index) => {
+            const pill = document.createElement('div');
+            pill.className = 'subject-pill';
+            pill.dataset.index = index;
+
+            const info = document.createElement('div');
+            const title = document.createElement('strong');
+            title.textContent = subject.code;
+            info.appendChild(title);
+
+            const subtitle = document.createElement('span');
+            subtitle.textContent = subject.title || 'Unnamed Course';
+            info.appendChild(subtitle);
+
+            if (subject.notes) {
+                const notes = document.createElement('small');
+                notes.textContent = subject.notes;
+                info.appendChild(notes);
+            }
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.setAttribute('aria-label', `Remove ${subject.code}`);
+
+            pill.appendChild(info);
+            pill.appendChild(removeBtn);
+            listEl.appendChild(pill);
+        });
+    };
+
+    const setStatus = (message, type = 'success') => {
+        if (!statusEl) return;
+        statusEl.textContent = message;
+        statusEl.style.color = type === 'success' ? 'var(--success-green)' : 'var(--warning-orange)';
+        if (message) {
+            setTimeout(() => {
+                statusEl.textContent = '';
+            }, 3000);
+        }
+    };
+
+    loadSubjects();
+    renderSubjects();
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const codeInput = document.getElementById('subject-code');
+        const titleInput = document.getElementById('subject-title');
+        const notesInput = document.getElementById('subject-notes');
+
+        const code = codeInput.value.trim().toUpperCase();
+        const title = titleInput.value.trim();
+        const notes = notesInput.value.trim();
+
+        if (!code || !title) {
+            setStatus('Please enter a course code and name.', 'error');
+            return;
+        }
+
+        subjects.push({ code, title, notes });
+        saveSubjects();
+        renderSubjects();
+
+        form.reset();
+        setStatus(`${code} added to your subjects.`);
+    });
+
+    listEl.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const pill = button.closest('.subject-pill');
+        if (!pill) return;
+        const index = parseInt(pill.dataset.index, 10);
+        if (isNaN(index)) return;
+
+        subjects.splice(index, 1);
+        saveSubjects();
+        renderSubjects();
+        setStatus('Subject removed.');
+    });
+}
+
+function initProfileManager(user) {
+    const openBtn = document.getElementById('profileBtn');
+    const modal = document.getElementById('profile-modal');
+    const form = document.getElementById('profileForm');
+    const statusEl = document.getElementById('profile-status');
+
+    if (!openBtn || !modal || !form || !user) return;
+
+    const fillForm = () => {
+        const stored = getStoredUser();
+        document.getElementById('profile-first-name').value = stored.first_name || user.first_name || '';
+        document.getElementById('profile-last-name').value = stored.last_name || user.last_name || '';
+        document.getElementById('profile-display-name').value = stored.full_name || stored.name || user.full_name || user.name || '';
+        document.getElementById('profile-email').value = stored.email || user.email || '';
+        document.getElementById('profile-phone').value = stored.phone || '';
+    };
+
+    openBtn.addEventListener('click', () => {
+        fillForm();
+        statusEl.textContent = '';
+        openModal(modal);
+    });
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const updatedProfile = {
+            first_name: document.getElementById('profile-first-name').value.trim(),
+            last_name: document.getElementById('profile-last-name').value.trim(),
+            full_name: document.getElementById('profile-display-name').value.trim(),
+            name: document.getElementById('profile-display-name').value.trim(),
+            email: document.getElementById('profile-email').value.trim(),
+            phone: document.getElementById('profile-phone').value.trim()
+        };
+
+        // Optimistic UI update
+        const mergedUser = setStoredUser(updatedProfile);
+        DashboardState.user = { ...DashboardState.user, ...mergedUser };
+        refreshUserUIElements(DashboardState.user);
+
+        statusEl.textContent = 'Saving...';
+        statusEl.style.color = 'var(--dark-gray)';
+
+        try {
+            await DashboardAPI.updateUserProfile(updatedProfile);
+            statusEl.textContent = 'Profile updated successfully.';
+            statusEl.style.color = 'var(--success-green)';
+            setTimeout(() => closeModal(modal), 800);
+        } catch (error) {
+            console.warn('Profile update API failed, retained local changes.', error);
+            statusEl.textContent = 'Saved locally. Please retry when online.';
+            statusEl.style.color = 'var(--warning-orange)';
+        }
+    });
+}
+
+        
+document.addEventListener('DOMContentLoaded', () => {
+
+console.log("Dashboard Loaded");
+
+//
+// 1. Assignment Form (admin)
+//
+const form = document.getElementById('assignmentForm');
+if (form) {
+    form.addEventListener('submit', handleAssignmentFormSubmit);
+}
+
+//
+// 2. Tutor Availability Form
+//
+const availabilityForm = document.getElementById('tutorAvailabilityForm');
+if (availabilityForm) {
+    availabilityForm.addEventListener('submit', handleAvailabilitySubmit);
+}
+
+// Load all approved tutors for the session request form
+async function loadAllTutorsForRequest() {
+  const tutorSelect = document.getElementById('request-tutor-select');
+  const statusEl = document.getElementById('tutor-loading-status');
+  
+  if (!tutorSelect) return;
+  
+  tutorSelect.innerHTML = '<option value="">Loading tutors...</option>';
+  tutorSelect.disabled = true;
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.textContent = 'Loading tutors...';
+  }
+  
+  try {
+    console.log('Loading all approved tutors...');
+    // Load all tutors without course filter
+    const data = await DashboardAPI.getAvailableTutors('');
+    console.log('Tutors API response:', data);
+    
+    const tutorList = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+    
+    if (statusEl) {
+      statusEl.style.display = 'none';
+    }
+    
+    if (!tutorList.length) {
+      tutorSelect.innerHTML = '<option value="">No approved tutors available</option>';
+      tutorSelect.disabled = true;
+      return;
+    }
+    
+    let options = '<option value="">-- Select a Tutor --</option>';
+    
+    tutorList.forEach(tutor => {
+      const id = tutor.tutor_id || tutor.id || tutor.user_id;
+      const name = tutor.full_name || tutor.name || 'Unknown Tutor';
+      const email = tutor.email || '';
+      
+      if (!id) {
+        console.warn('Tutor missing ID:', tutor);
+        return;
+      }
+      
+      const labelParts = [name];
+      if (email) labelParts.push(`(${email})`);
+      
+      options += `<option value="${id}">${labelParts.join(' ')}</option>`;
+    });
+    
+    tutorSelect.innerHTML = options;
+    tutorSelect.disabled = false;
+    console.log('Successfully loaded', tutorList.length, 'tutors');
+    
+  } catch (error) {
+    console.error('Error loading tutors:', error);
+    tutorSelect.innerHTML = '<option value="">Error loading tutors. Please try again.</option>';
+    tutorSelect.disabled = true;
+    if (statusEl) {
+      statusEl.style.display = 'block';
+      statusEl.textContent = 'Error: ' + (error.message || 'Failed to load tutors');
+      statusEl.style.color = 'red';
+    }
+  }
+}
+
+const sessionForm = document.getElementById('sessionRequestForm');
+if (sessionForm) {
+  sessionForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitSessionRequest();
+  });
+  
+  // Load all tutors when form is available (for students)
+  loadAllTutorsForRequest();
+}
+
+//
+// 3. Add Slot Button
+//
+const addSlotBtn = document.getElementById('add-slot-btn');
+if (addSlotBtn) {
+    addSlotBtn.addEventListener('click', addScheduleSlot);
+}
+
+//
+// 4. Pending Session Request Buttons (Approve/Reject)
+//
+const pendingList = document.getElementById('pending-sessions-list');
+if (pendingList) {
+    pendingList.addEventListener('click', handlePendingSessionAction);
+}
+
+//
+// 5. LOAD INITIAL DATA
+//
+loadTutorAvailability();   // Load already saved availability
+loadPendingSessions();     // Load pending student session requests
+});
+
+        async function loadTutorAvailability() {
+    const listEl = document.getElementById('tutor-availability-list');
+    if (!listEl) return;
+
+    listEl.innerHTML = '<p style="color: var(--dark-gray);">Loading availability...</p>';
+
+    try {
+        const res = await fetch('api/tutors/get_availability.php', {
+            credentials: 'include'
+        });
+        const data = await res.json();
+        console.log('get_availability:', data);
+
+        if (!data.success) {
+            listEl.innerHTML = '<p style="color: var(--danger-red);">Could not load availability.</p>';
+            return;
+        }
+
+        const slots = data.data;
+        if (!slots || slots.length === 0) {
+            listEl.innerHTML = '<p style="color: var(--dark-gray);">No availability saved yet.</p>';
+            return;
+        }
+
+        const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+        listEl.innerHTML = ''; // clear
+
+        slots.forEach(slot => {
+            const dayLabel = dayNames[slot.day_of_week] ?? `Day ${slot.day_of_week}`;
+            const start = slot.start_time.slice(0,5); // "12:00"
+            const end   = slot.end_time.slice(0,5);   // "15:00"
+
+            const row = document.createElement('div');
+            row.className = 'availability-row';
+            row.style.marginBottom = '6px';
+            row.innerHTML = `
+                <span><strong>${dayLabel}</strong>: ${start} – ${end}</span>
+            `;
+            listEl.appendChild(row);
+        });
+    } catch (err) {
+        console.error(err);
+        listEl.innerHTML = '<p style="color: var(--danger-red);">Error loading availability.</p>';
+    }
+}
+// Handle approve/reject clicks in Pending Session section
+// Listen for Approve / Reject clicks in the pending sessions list
+// Attach click handler for Approve / Reject buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const pendingList = document.getElementById('pending-sessions-list');
+    if (pendingList) {
+        pendingList.addEventListener('click', handlePendingSessionAction);
+    }
+});
+
+async function handlePendingSessionAction(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    const sessionId = btn.getAttribute('data-session-id');
+    if (!sessionId) return;
+
+    let action = null;
+    if (btn.classList.contains('btn-approve')) {
+        action = 'approve';
+    } else if (btn.classList.contains('btn-reject')) {
+        action = 'reject';
+    } else {
+        return; // clicked something else inside the card
+    }
+
+    if (action === 'approve') {
+        if (!confirm('Approve this session request?')) return;
+    } else {
+        if (!confirm('Reject this session request?')) return;
+    }
+
+    try {
+        const res = await fetch('api/tutors/update_session_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                action: action
+            }),
+            credentials: 'include'
+        });
+
+        const data = await res.json();
+        console.log('update_session_status response:', data);
+
+        if (!data.success) {
+            alert(data.message || 'Failed to update session.');
+            return;
+        }
+
+        showToast(`Session ${action}d successfully.`, 'success');
+        // reload lists after update
+        loadPendingSessions();
+        // Refresh upcoming sessions if approved
+        if (action === 'approve') {
+            loadTutorUpcomingSessions();
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Network error while updating session.');
+    }
+}
+
+
+// Function to handle the submission of the full availability form
+async function handleAvailabilitySubmit(e) {
+    e.preventDefault(); // stop form reload
+
+    const daySelects  = document.querySelectorAll('.slot-day');
+    const startInputs = document.querySelectorAll('.slot-start');
+    const endInputs   = document.querySelectorAll('.slot-end');
+
+    if (daySelects.length === 0) {
+        alert('Please add at least one slot.');
+        return;
+    }
+
+    const dayMap = {
+        'Sunday': 0,
+        'Monday': 1,
+        'Tuesday': 2,
+        'Wednesday': 3,
+        'Thursday': 4,
+        'Friday': 5,
+        'Saturday': 6
+    };
+
+    let anyError = false;
+
+    for (let i = 0; i < daySelects.length; i++) {
+        const dayName   = daySelects[i].value;
+        const startTime = startInputs[i].value;
+        const endTime   = endInputs[i].value;
+
+        if (!dayName || !startTime || !endTime) {
+            anyError = true;
+            continue;
+        }
+
+        const body = new URLSearchParams();
+        body.append('day_of_week', dayMap[dayName]);
+        body.append('start_time',  startTime);
+        body.append('end_time',    endTime);
+
+        try {
+            const res = await fetch('api/tutors/set_availability.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+                credentials: 'include'
+            });
+
+            const data = await res.json();
+            console.log('Slot response:', data);
+
+            if (!data.success) {
+                anyError = true;
+            }
+        } catch (err) {
+            console.error(err);
+            anyError = true;
+        }
+    }
+
+    if (anyError) {
+        alert('Some slots could not be saved.');
+    } else {
+        alert('All availability slots saved successfully!');
+        loadTutorAvailability();   // refresh the "Your Saved Availability" card
+    }
+}
+
+async function handleSessionRequestSubmit(e) {
+    e.preventDefault();
+
+    const tutorIdInput  = document.getElementById('request-tutor-id');
+    const courseInput   = document.getElementById('request-course');
+    const dateInput     = document.getElementById('request-date');
+    const startInput    = document.getElementById('request-start');
+    const endInput      = document.getElementById('request-end');
+    const notesInput    = document.getElementById('request-notes');
+    const messageEl     = document.getElementById('session-request-message');
+
+    const tutorId   = parseInt(tutorIdInput.value, 10);
+    const course    = courseInput.value.trim();
+    const date      = dateInput.value;
+    const startTime = startInput.value;
+    const endTime   = endInput.value || null;
+    const notes     = notesInput.value.trim();
+
+    if (!tutorId || !course || !date || !startTime) {
+        messageEl.textContent = 'Please fill all required fields.';
+        messageEl.style.color = 'var(--danger-red)';
+        return;
+    }
+
+    try {
+        const res = await fetch('api/student/request_session.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                tutor_id: tutorId,
+                course_code: course,
+                meeting_date: date,
+                start_time: startTime,
+                end_time: endTime,
+                notes: notes,
+                location: 'Online'   // or 'On-Campus'
+            }),
+            credentials: 'include'
+        });
+
+        const data = await res.json();
+        console.log('request_session response:', data);
+
+        if (data.success) {
+            messageEl.textContent = '✅ Session request sent successfully!';
+            messageEl.style.color = 'green';
+
+            // Optionally clear form
+            // e.target.reset();
+        } else {
+            messageEl.textContent = '❌ ' + (data.message || 'Request failed.');
+            messageEl.style.color = 'var(--danger-red)';
+        }
+    } catch (err) {
+        console.error(err);
+        messageEl.textContent = 'Network error. Please try again.';
+        messageEl.style.color = 'var(--danger-red)';
+    }
+}
+
+
+    
+        // Dashboard API Service
+        function getFriendlyName(user) {
+            if (!user) return 'Student';
+            const candidates = [
+                user.first_name,
+                user.full_name,
+                user.name,
+                user.username,
+                user.email ? user.email.split('@')[0] : ''
+            ];
+            const chosen = candidates.find(value => value && value.trim().length) || 'Student';
+            const trimmed = chosen.trim();
+            const firstWord = trimmed.split(' ')[0];
+            return firstWord || trimmed;
+        }
+
+        function getStoredUser() {
+            try {
+                return JSON.parse(localStorage.getItem('aurak_user')) || {};
+            } catch (error) {
+                console.warn('Failed to parse stored user', error);
+                return {};
+            }
+        }
+
+        function setStoredUser(partial) {
+            const current = getStoredUser();
+            const merged = { ...current, ...partial };
+            localStorage.setItem('aurak_user', JSON.stringify(merged));
+            return merged;
+        }
+
+        function refreshUserUIElements(user) {
+            if (!user) return;
+            const nameEl = document.getElementById('userName');
+            if (nameEl) {
+                nameEl.textContent = user.full_name || user.name || getFriendlyName(user);
+            }
+
+            const greetingElement = document.getElementById('personalized-greeting');
+            if (greetingElement) {
+                const hour = new Date().getHours();
+                let greeting = 'Good Evening';
+                if (hour >= 5 && hour < 12) greeting = 'Good Morning';
+                else if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
+                greetingElement.textContent = `${greeting}, ${getFriendlyName(user)}! 👋`;
+            }
+        }
+
+        const DashboardAPI = {
+            // Base URL for API endpoints
+            baseURL: '/SE.PROJECT/api',
+            
+            // Helper function to get auth headers
+            getAuthHeaders() {
+                const token = localStorage.getItem('authToken');
+                return {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                };
+            },
+            
+            // Generic API request function
+            async request(endpoint, options = {}) {
+                const url = `${this.baseURL}${endpoint}`;
+                const config = {
+                    ...options,
+                    headers: {
+                        ...this.getAuthHeaders(),
+                        ...(options.headers || {})
+                    }
+                };
+                
+                if (!config.credentials) {
+                    config.credentials = 'include';
+                }
+                if (!config.method) {
+                    config.method = 'GET';
+                }
+                
+                try {
+                    const response = await fetch(url, config);
+                    if (!response.ok) {
+                        // Attempt to parse JSON error message if possible
+                        let errorDetail = await response.json().catch(() => ({ message: `HTTP status ${response.status}` }));
+                        throw new Error(`API Request failed: ${errorDetail.message}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+            
+            // User endpoints
+            async getUserProfile() {
+                return this.request('/user/profile');
+            },
+            
+            async updateUserProfile(profileData) {
+                return this.request('/user/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify(profileData)
+                });
+            },
+            
+            // Progress endpoints
+            async getProgressData() {
+                return this.request('/progress/index.php'); 
+            },
+            
+            // Courses endpoints
+            async getUserCourses() {
+                throw new Error("Courses endpoint not implemented.");
+            },
+            
+            // Tutors endpoints
+            async getRecommendedTutors() {
+                return this.request('/tutors/recommended.php'); 
+            },
+            
+            async getAvailableTutors(courseCode = '') {
+                const query = courseCode ? `?course=${encodeURIComponent(courseCode)}` : '';
+                return this.request(`/tutors/get_available_tutors.php${query}`);
+            },
+
+            async bookTutorSession(tutorId, sessionData) {
+                return this.request(`/tutors/${tutorId}/book`, {
+                    method: 'POST',
+                    body: JSON.stringify(sessionData)
+                });
+            },
+            
+            // Student sessions
+            async getStudentUpcomingSessions() {
+                return this.request('/student/get_upcoming_sessions.php');
+            },
+            
+            // Messages endpoints
+            async getMessages(sessionId, role = 'student') {
+                const endpoint = role === 'student' ? '/student/get_messages.php' : '/tutors/get_messages.php';
+                return this.request(`${endpoint}?session_id=${sessionId}`);
+            },
+            
+            async sendMessage(sessionId, receiverId, message, role = 'student') {
+                const endpoint = role === 'student' ? '/student/send_message.php' : '/tutors/send_message.php';
+                return this.request(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify({ session_id: sessionId, receiver_id: receiverId, message: message })
+                });
+            },
+            
+            // Tutor sessions
+            async getTutorUpcomingSessions() {
+                return this.request('/tutors/get_upcoming_sessions.php');
+            },
+            
+            // NEW ADMIN ENDPOINTS
+            async getPendingTutors() {
+                return this.request('/admin/pending_tutors.php');
+            },
+            
+            async getPublicRequests() {
+                return this.request('/admin/get_public_requests.php');
+            },
+
+            async postTutorApproval(userId, action) {
+                return this.request('/admin/tutor_approval.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: userId, action: action })
+                });
+            },
+            
+            // Posts endpoints
+            async createPost(postData) {
+                throw new Error("Posts endpoint not implemented.");
+            },
+            
+            async getUserPosts() {
+                throw new Error("User Posts endpoint not implemented.");
+            },
+            
+            // Notifications endpoints
+            async getNotifications() {
+                throw new Error("Notifications endpoint not implemented.");
+            },
+            
+            // Resources endpoints
+            async getSavedResources() {
+                return this.request('/resources/saved.php'); 
+            },
+            
+            async saveResource(resourceId) {
+                return this.request(`/resources/${resourceId}/save`, {
+                    method: 'POST'
+                });
+            },
+            
+            // Search endpoint
+            async globalSearch(query) {
+                throw new Error("Search endpoint not implemented.");
+            },
+            
+            // Achievements endpoints
+            async getAchievements() {
+                throw new Error("Achievements endpoint not implemented.");
+            },
+            
+            // System status endpoint
+            async getSystemStatus() {
+                return this.request('/system/status.php');
+            }
+        };
+
+        // Dashboard State Manager (Your Existing Mock Data)
+        const DashboardState = {
+            user: null,
+            progress: null,
+            courses: [],
+            tutors: [],
+            notifications: [],
+            resources: [],
+            achievements: [],
+            systemStatus: null,
+            searchResults: [],
+            
+            async initialize() {
+                // --- CORE ROLE CHECK AND VIEW SWITCHING (MOVED FOR CORRECT EXECUTION) ---
+                const raw = localStorage.getItem('aurak_user');
+                const adminView = document.getElementById('admin-view');
+                const studentView = document.getElementById('student-view');
+                const approvedView = document.getElementById('approved-tutor-view');
+                const pendingView = document.getElementById('pending-tutor-view');
+                
+                // Fix 1: Theme Consistency Check (Ensures light mode unless dark mode is saved)
+                const body = document.body;
+                if (!localStorage.getItem('theme')) {
+                     body.classList.remove('dark');
+                } else if (localStorage.getItem('theme') === 'light') {
+                     body.classList.remove('dark');
+                }
+                
+                const base = '/SE.PROJECT';
+
+                if (raw) {
+                    try {
+                        const user = JSON.parse(raw);
+                        const role = (user.role || 'student').toLowerCase();
+                        const status = (user.tutor_status || 'n/a').toLowerCase();
+                        
+                        // 1. Update Header Display (must run first)
+                        const nameEl = document.getElementById('userName');
+                        const roleEl = document.getElementById('userRole');
+                        if (nameEl) nameEl.textContent = user.full_name || user.name || getFriendlyName(user);
+                        if (roleEl) roleEl.textContent = (user.role || 'student').toUpperCase();
+                        document.getElementById('signinLink')?.classList.add('hidden');
+                        document.getElementById('userPanel')?.classList.remove('hidden');
+                        initProfileManager(user);
+                        
+                        // Fix 2: Greeting Change (Dynamic based on role)
+                        const greetingElement = document.getElementById('personalized-greeting');
+                        const hour = new Date().getHours();
+                        let greeting = 'Good Evening';
+                        if (hour >= 5 && hour < 12) greeting = 'Good Morning';
+                        else if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
+                        
+                        // Fix 2: Set the greeting to reflect the role
+                        if (greetingElement) {
+                            const friendlyName = getFriendlyName(user);
+                            greetingElement.textContent = `${greeting}, ${friendlyName}! 👋`;
+                        }
+                        
+                        // 3. Switch Views & Load Role-Specific Data
+                        if (role === 'admin') {
+                            showRoleView(adminView);
+                            // Hide student-specific floating buttons and search bar
+                            document.getElementById('create-post-btn')?.classList.add('hidden');
+                            document.getElementById('open-tutor-app-btn')?.classList.add('hidden');
+                            document.getElementById('global-search-container')?.classList.add('hidden');
+
+                            fetchPendingTutors(); // Peer Applications
+                            fetchPublicRequests(); // Public Requests
+                            
+                        } else if (role === 'tutor') {
+                            // Hide search bar/post button for tutors too, they manage sessions
+                            document.getElementById('global-search-container')?.classList.add('hidden');
+                            document.getElementById('create-post-btn')?.classList.add('hidden');
+                            document.getElementById('open-tutor-app-btn')?.classList.add('hidden');
+
+                            if (status === 'approved') {
+                                showRoleView(approvedView);
+                                // CRITICAL: Update the specific welcome message inside the approved view
+                                document.getElementById('tutor-welcome-name').textContent = user.full_name || user.name || getFriendlyName(user);
+                                initTutorSubjectManager(user);
+                                loadTutorUpcomingSessions();
+                                loadTutorSessionsForMessages();
+                                
+                            } else if (status === 'pending') {
+                                showRoleView(pendingView);
+                            } else {
+                                showRoleView(studentView);
+                            }
+                        } else { // Student
+                            showRoleView(studentView);
+                            loadStudentUpcomingSessions();
+                            loadStudentSessionsForMessages();
+                        }
+                    } catch (e) {
+                        console.error("Error during initialization:", e);
+                        localStorage.removeItem('aurak_user');
+                    }
+                } else {
+                    // Not logged in, redirect (handled by other code, but safe to check)
+                    const base = '/SE.PROJECT';
+                    if (location.pathname.toLowerCase().includes('dashboard')) { location.href = `${base}/login.html`; }
+                }
+
+                // 4. Continue loading dashboard data only if the Student view is active
+                if (studentView && !studentView.classList.contains('hidden')) {
+                     try {
+                        let storedUser = raw ? JSON.parse(raw) : {};
+                        await Promise.all([
+                            this.loadUserProfile(storedUser),
+                            this.loadProgressData(),
+                            this.loadCourses(),
+                            this.loadTutors(),
+                            this.loadNotifications(),
+                            this.loadResources(),
+                            this.loadAchievements(),
+                            this.loadSystemStatus()
+                        ]);
+                        this.updateUI();
+                    } catch (error) {
+                        console.error('Failed to load student dashboard content:', error);
+                    }
+                }
+            },
+            
+            // Load user profile (Modified to use stored data for initial name/role)
+            async loadUserProfile(storedUser) {
+                try {
+                    // Try to fetch real profile data
+                    this.user = await DashboardAPI.getUserProfile();
+                    // Merge with local storage for missing UI fields (like full_name)
+                    this.user = { ...storedUser, ...this.user };
+                } catch (error) {
+                    // Fallback to mock data if API fails
+                    this.user = {
+                        id: storedUser.id || 1,
+                        name: storedUser.name || 'Guest Student', 
+                        role: storedUser.role || 'student',
+                        tutor_status: storedUser.tutor_status || 'n/a',
+                        email: storedUser.email || 'guest@aurak.ac.ae',
+                        major: 'Computer Science',
+                        year: '2nd Year',
+                        avatar: (storedUser.name || 'G').charAt(0)
+                    };
+                }
+            },
+            
+            // Load progress data
+            async loadProgressData() {
+                try {
+                    this.progress = await DashboardAPI.getProgressData();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.progress = {
+                        sessionsAttended: 8,
+                        totalHours: 12.5,
+                        gradeImprovement: 15,
+                        avgRating: 4.8
+                    };
+                }
+            },
+            
+            // Load courses
+            async loadCourses() {
+                try {
+                    this.courses = await DashboardAPI.getUserCourses();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.courses = [
+                        {
+                            id: 1,
+                            code: 'CSIT111',
+                            name: 'Intro to Programming',
+                            activePosts: 4,
+                            nextExam: '2025-11-25'
+                        },
+                        {
+                            id: 2,
+                            code: 'MATH255',
+                            name: 'Calculus II',
+                            activePosts: 2,
+                            nextExam: '2025-12-01'
+                        },
+                        {
+                            id: 3,
+                            code: 'ACCY121',
+                            name: 'Financial Accounting',
+                            activePosts: 0,
+                            nextExam: '2025-12-15'
+                        }
+                    ];
+                }
+            },
+            
+            // Load tutors
+            async loadTutors() {
+                try {
+                    this.tutors = await DashboardAPI.getRecommendedTutors();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.tutors = [
+                        {
+                            id: 1,
+                            name: 'Rhythm Shahi',
+                            initials: 'RS',
+                            subject: 'CSIT',
+                            rating: 4.9,
+                            available: true,
+                            status: 'Available Now'
+                        },
+                        {
+                            id: 2,
+                            name: 'Mudar Bohra',
+                            initials: 'MB',
+                            subject: 'ACCY',
+                            rating: 4.7,
+                            available: false,
+                            status: 'Busy Until 3 PM'
+                        },
+                        {
+                            id: 3,
+                            name: 'Ahmed Khan',
+                            initials: 'AK',
+                            subject: 'MATH',
+                            rating: 4.5,
+                            available: true,
+                            status: 'Available @ 5 PM'
+                        }
+                    ];
+                }
+            },
+            
+            // Load notifications
+            async loadNotifications() {
+                try {
+                    this.notifications = await DashboardAPI.getNotifications();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.notifications = [
+                        {
+                            id: 1,
+                            type: 'booking',
+                            message: 'Booking Confirmed: Your session with Rhythm (CSIT111) is confirmed for 4 PM today.',
+                            read: false,
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            id: 2,
+                            type: 'reply',
+                            message: 'New Reply: Mudar Bohra replied to your post about ACCY121 tables.',
+                            read: false,
+                            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+                        },
+                        {
+                            id: 3,
+                            type: 'reminder',
+                            message: 'Reminder: MATH255 Midterm is 10 days away! Book a tutor.',
+                            read: false,
+                            timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+                        },
+                        {
+                            id: 4,
+                            type: 'feedback',
+                            message: 'Feedback Request: Please rate your last session with Jonus Thomas.',
+                            read: false,
+                            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+                        }
+                    ];
+                }
+            },
+            
+            // Load resources
+            async loadResources() {
+                try {
+                    this.resources = await DashboardAPI.getSavedResources();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.resources = [
+                        {
+                            id: 1,
+                            name: 'CSIT111 Final Review Sheet',
+                            type: 'pdf',
+                            url: '#'
+                        },
+                        {
+                            id: 2,
+                            name: 'External Python Tutorial',
+                            type: 'link',
+                            url: '#'
+                        },
+                        {
+                            id: 3,
+                            name: 'Mudar Bohra\'s Profile',
+                            type: 'profile',
+                            url: '#'
+                        }
+                    ];
+                }
+            },
+            
+            // Load achievements
+            async loadAchievements() {
+                try {
+                    this.achievements = await DashboardAPI.getAchievements();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.achievements = [
+                        { id: 1, name: 'First Session', icon: 'trophy', unlocked: true },
+                        { id: 2, name: 'Concept Master', icon: 'lightbulb', unlocked: true },
+                        { id: 3, name: 'Resource Hunter', icon: 'book-reader', unlocked: false },
+                        { id: 4, name: 'Top Booster', icon: 'crown', unlocked: false }
+                    ];
+                }
+            },
+            
+            // Load system status
+            async loadSystemStatus() {
+                try {
+                    this.systemStatus = await DashboardAPI.getSystemStatus();
+                } catch (error) {
+                    // Fallback to mock data
+                    this.systemStatus = {
+                        activeTutors: 24,
+                        onlineTutors: 18,
+                        sessionsToday: { completed: 15, upcoming: 5 },
+                        systemHealth: 'operational'
+                    };
+                }
+            },
+            
+            // Update UI with current state
+            updateUI() {
+                // Greeting is now updated in the initialize block for speed, but left here for Student view data injection
+                // this.updateGreeting(); 
+                this.updateProgress();
+                this.updateCourses();
+                this.updateTutors();
+                this.updateNotifications();
+                this.updateResources();
+                this.updateAchievements();
+                this.updateSystemStatus();
+                this.startCountdowns();
+            },
+            
+            // Update personalized greeting
+            updateGreeting() {
+                const greetingElement = document.getElementById('personalized-greeting');
+                if (greetingElement && this.user) {
+                    const hour = new Date().getHours();
+                    let greeting = 'Good Evening';
+                    
+                    if (hour >= 5 && hour < 12) greeting = 'Good Morning';
+                    else if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
+                    
+                    greetingElement.textContent = `${greeting}, ${getFriendlyName(this.user)}! 👋`;
+                }
+            },
+            
+            // Update progress analytics
+            updateProgress() {
+                const progressGrid = document.getElementById('progress-grid');
+                if (progressGrid && this.progress) {
+                    progressGrid.innerHTML = `
+                        <div class="progress-item">
+                            <div class="progress-value">${this.progress.sessionsAttended}</div>
+                            <div class="progress-label">Sessions Attended</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-value">${this.progress.totalHours} hrs</div>
+                            <div class="progress-label">Total Tutored Hours</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-value">${this.progress.gradeImprovement}%</div>
+                            <div class="progress-label">Grade Improvement</div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-value">${this.progress.avgRating}</div>
+                            <div class="progress-label">Average Tutor Rating</div>
+                        </div>
+                    `;
+                }
+            },
+            
+            // Update courses list
+            updateCourses() {
+                const courseList = document.getElementById('course-list');
+                if (courseList && this.courses) {
+                    courseList.innerHTML = this.courses.map(course => `
+                        <div class="course-item fade-in">
+                            <div class="tutor-details">
+                                <span class="tutor-name">${course.code} - ${course.name}</span>
+                                <span style="font-size: 14px; color: var(--dark-gray);">
+                                    ${course.activePosts} active posts | Next Exam: ${new Date(course.nextExam).toLocaleDateString()}
+                                </span>
+                            </div>
+                            <div class="session-action">
+                                <a href="#" onclick="bookTutorForCourse('${course.code}')">Find Tutor</a>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            },
+            
+            // Update tutors list
+            updateTutors() {
+                const tutorList = document.getElementById('tutor-list');
+                if (tutorList && this.tutors) {
+                    tutorList.innerHTML = this.tutors.map(tutor => `
+                        <div class="tutor-suggestion fade-in">
+                            <div class="avatar-small">${tutor.initials}</div>
+                            <div class="tutor-details">
+                                <span class="tutor-name">${tutor.name} (${tutor.subject})</span>
+                                <span style="font-size: 14px; color: var(--dark-gray);">
+                                    ${tutor.rating} ★ | <a href="#" onclick="bookTutor(${tutor.id})">Book Now</a>
+                                </span>
+                            </div>
+                            <span class="tutor-availability ${tutor.available ? 'available' : 'busy'}">
+                                ${tutor.status}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+            },
+            
+            // Update notifications
+            updateNotifications() {
+                const notificationList = document.getElementById('notification-list');
+                if (notificationList && this.notifications) {
+                    notificationList.innerHTML = this.notifications.map(notification => `
+                        <div class="notification-item fade-in">
+                            <i class="fas fa-${this.getNotificationIcon(notification.type)}"></i>
+                            <span>${notification.message}</span>
+                        </div>
+                    `).join('');
+                }
+            },
+            
+            // Update resources
+            updateResources() {
+                const resourcesContainer = document.getElementById('saved-resources');
+                if (resourcesContainer && this.resources) {
+                    resourcesContainer.innerHTML = `
+                        <ul style="font-size: 15px; list-style: none; padding: 0; color: var(--text-color);">
+                            ${this.resources.map(resource => `
+                                <li>
+                                    <a href="${resource.url}" style="color: var(--text-color);" 
+                                       onmouseover="this.style.color='var(--primary-red)'" 
+                                       onmouseout="this.style.color='var(--text-color)'">
+                                        <i class="fas fa-${this.getResourceIcon(resource.type)}" 
+                                           style="margin-right: 8px; color: ${this.getResourceColor(resource.type)};"></i>
+                                        ${resource.name}
+                                    </a>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+            },
+            
+            // Update achievements
+            updateAchievements() {
+                const badgesGrid = document.getElementById('badges-grid');
+                if (badgesGrid && this.achievements) {
+                    badgesGrid.innerHTML = this.achievements.map(achievement => `
+                        <div class="badge ${achievement.unlocked ? 'unlocked' : ''}" 
+                             title="${achievement.unlocked ? achievement.name : 'Locked: ' + achievement.name}">
+                            <span class="badge-icon"><i class="fas fa-${achievement.icon}"></i></span>
+                            <span class="badge-label">${achievement.name}</span>
+                        </div>
+                    `).join('');
+                }
+            },
+            
+            // Update system status
+            updateSystemStatus() {
+                const systemStatusContainer = document.getElementById('system-status');
+                if (systemStatusContainer && this.systemStatus) {
+                    systemStatusContainer.innerHTML = `
+                        <ul style="font-size: 15px; list-style: none; padding: 0;">
+                            <li style="margin-bottom: 8px;">
+                                <span style="font-weight: 600;">Active Tutors:</span> ${this.systemStatus.activeTutors} 
+                                <span style="color: #2E7D32;">(${this.systemStatus.onlineTutors} Online)</span>
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <span style="font-weight: 600;">Sessions Today:</span> 
+                                ${this.systemStatus.sessionsToday.completed} Completed, ${this.systemStatus.sessionsToday.upcoming} Upcoming
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <span style="font-weight: 600;">System Health:</span> 
+                                ${this.systemStatus.systemHealth === 'operational' ? 'Operational' : 'Issues'} 
+                                <i class="fas fa-${this.systemStatus.systemHealth === 'operational' ? 'check-circle' : 'exclamation-triangle'}" 
+                                   style="color: ${this.systemStatus.systemHealth === 'operational' ? '#2E7D32' : '#FF9800'};"></i>
+                            </li>
+                        </ul>
+                    `;
+                }
+            },
+            
+            // Start countdown timers for exams
+            startCountdowns() {
+                const examList = document.getElementById('exam-list');
+                if (examList && this.courses) {
+                    examList.innerHTML = this.courses.map(course => {
+                        const examDate = new Date(course.nextExam).getTime();
+                        const now = new Date().getTime();
+                        const distance = examDate - now;
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        
+                        return `
+                            <div class="exam-item fade-in">
+                                <div>
+                                    <strong>${course.code} ${course.name.includes('Final') ? 'Final' : 'Exam'}</strong><br>
+                                    <span style="color: var(--dark-gray); font-size: 14px;">
+                                        ${new Date(course.nextExam).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div class="countdown ${days <= 7 ? 'urgent' : ''}" id="${course.code}-countdown">
+                                    ${days}d ${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    // Update countdowns every minute
+                    setInterval(() => {
+                        this.courses.forEach(course => {
+                            const countdownElement = document.getElementById(`${course.code}-countdown`);
+                            if (countdownElement) {
+                                const examDate = new Date(course.nextExam).getTime();
+                                const now = new Date().getTime();
+                                const distance = examDate - now;
+                                
+                                if (distance < 0) {
+                                    countdownElement.textContent = "EXPIRED";
+                                    countdownElement.classList.add('urgent');
+                                    return;
+                                }
+                                
+                                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                
+                                countdownElement.textContent = `${days}d ${hours}h ${minutes}m`;
+                                countdownElement.className = `countdown ${days <= 7 ? 'urgent' : ''}`;
+                            }
+                        });
+                    }, 60000);
+                }
+            },
+
+            
+            
+            // Helper function to get notification icon
+            getNotificationIcon(type) {
+                const icons = {
+                    'booking': 'check-circle',
+                    'reply': 'reply',
+                    'reminder': 'clock',
+                    'feedback': 'star'
+                };
+                return icons[type] || 'bell';
+            },
+            
+            // Helper function to get resource icon
+            getResourceIcon(type) {
+                const icons = {
+                    'pdf': 'file-pdf',
+                    'link': 'link',
+                    'profile': 'star'
+                };
+                return icons[type] || 'file';
+            },
+            
+            // Helper function to get resource color
+            getResourceColor(type) {
+                const colors = {
+                    'pdf': 'var(--primary-red)',
+                    'link': 'var(--primary-blue)',
+                    'profile': 'var(--accent-yellow)'
+                };
+                return colors[type] || 'var(--dark-gray)';
+            }
+        };
+
+        // Global UI Functions
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const toastMessage = document.getElementById('toast-message');
+            
+            if (toast && toastMessage) {
+                toastMessage.textContent = message;
+                toast.className = type === 'error' ? 'error' : '';
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 4000);
+            }
+        }
+
+        function openModal(modal) {
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modal) {
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            window.location.href = 'login.html';
+        }
+
+        // Global search function
+        async function performGlobalSearch(query) {
+            try {
+                const results = await DashboardAPI.globalSearch(query);
+                DashboardState.searchResults = results;
+                displaySearchResults(results);
+            } catch (error) {
+                // Fallback to client-side search
+                const allData = [
+                    ...DashboardState.courses,
+                    ...DashboardState.tutors,
+                    ...DashboardState.resources
+                ];
+                
+                const filteredResults = allData.filter(item => 
+                    item.name.toLowerCase().includes(query.toLowerCase()) ||
+                    (item.code && item.code.toLowerCase().includes(query.toLowerCase())) ||
+                    (item.subject && item.subject.toLowerCase().includes(query.toLowerCase()))
+                );
+                
+                displaySearchResults(filteredResults);
+            }
+        }
+
+        function displaySearchResults(results) {
+            const searchResultsContainer = document.getElementById('search-results');
+            const searchStatus = document.getElementById('search-status');
+            
+            if (searchResultsContainer && searchStatus) {
+                if (results.length > 0) {
+                    searchResultsContainer.innerHTML = results.map(result => `
+                        <div class="search-result-item fade-in">
+                            <span class="search-result-type type-${result.type || 'course'}">
+                                ${(result.type || 'course').toUpperCase()}
+                            </span>
+                            <strong>${result.name}</strong>
+                            ${result.code ? `(${result.code})` : ''}
+                            ${result.rating ? `- ${result.rating} ★` : ''}
+                        </div>
+                    `).join('');
+                    searchResultsContainer.style.display = 'block';
+                    searchStatus.innerHTML = `<i class="fas fa-search"></i> Found ${results.length} results for your search`;
+                    searchStatus.style.display = 'block';
+                } else {
+                    searchResultsContainer.style.display = 'none';
+                    searchStatus.innerHTML = `<i class="fas fa-search"></i> No results found for your search`;
+                    searchStatus.style.display = 'block';
+                }
+            }
+        }
+
+        // Tutor booking functions
+        function bookTutor(tutorId) {
+            const tutor = DashboardState.tutors.find(t => t.id === tutorId);
+            if (tutor) {
+                showToast(`Booking session with ${tutor.name}...`);
+                // In a real app, this would open a booking modal
+            }
+        }
+
+        function bookTutorForCourse(courseCode) {
+            showToast(`Finding tutors for ${courseCode}...`);
+            // In a real app, this would filter tutors by course
+        }
+
+        // Initialize the dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Header scroll effect (matching homepage)
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('main-header');
+                if (header && window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else if (header) {
+                    header.classList.remove('scrolled');
+                }
+            });
+            
+            // Initialize dashboard state
+            DashboardState.initialize();
+            
+            // Cache DOM elements
+            const body = document.body;
+            const searchInput = document.getElementById('global-search');
+            const postModal = document.getElementById('post-modal');
+            const createPostBtn = document.getElementById('create-post-btn');
+            const closePostModalBtn = document.getElementById('close-post-modal');
+            const createPostForm = document.getElementById('create-post-form');
+            const submitPostBtn = document.getElementById('submit-post-btn');
+            const submitBtnText = document.getElementById('submit-btn-text');
+            const submitBtnSpinner = document.getElementById('submit-btn-spinner');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            // Global search functionality
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+                    
+                    if (query.length > 2) {
+                        searchTimeout = setTimeout(() => {
+                            performGlobalSearch(query);
+                        }, 500);
+                    } else {
+                        document.getElementById('search-results').style.display = 'none';
+                        document.getElementById('search-status').style.display = 'none';
+                        document.getElementById('personalized-greeting').style.display = 'block';
+                    }
+                });
+            }
+            
+            // Create post modal functionality
+            if (createPostBtn) {
+                createPostBtn.addEventListener('click', () => openModal(postModal));
+            }
+            
+            if (closePostModalBtn) {
+                closePostModalBtn.addEventListener('click', () => closeModal(postModal));
+            }
+            
+            if (postModal) {
+                postModal.addEventListener('click', (e) => {
+                    if (e.target === postModal) closeModal(postModal);
+                });
+            }
+            
+            // Create post form submission
+            if (createPostForm) {
+                createPostForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const course = document.getElementById('post-course').value;
+                    const title = document.getElementById('post-title').value;
+                    const details = document.getElementById('post-details').value;
+                    
+                    // Show loading state
+                    submitPostBtn.disabled = true;
+                    submitBtnText.textContent = 'Posting...';
+                    submitBtnSpinner.style.display = 'inline-block';
+                    
+                    try {
+                        // Simulate API call
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        // In a real app, you would use:
+                        // await DashboardAPI.createPost({ course, title, details });
+                        
+                        showToast(`New post for ${course} submitted successfully!`);
+                        closeModal(postModal);
+                        this.reset();
+                    } catch (error) {
+                        showToast('Failed to create post. Please try again.', 'error');
+                    } finally {
+                        // Reset button state
+                        submitPostBtn.disabled = false;
+                        submitBtnText.textContent = 'Post Question';
+                        submitBtnSpinner.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Dark mode toggle
+            if (darkModeToggle) {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    body.classList.add('dark');
+                }
+                
+                darkModeToggle.addEventListener('click', () => {
+                    body.classList.toggle('dark');
+                    localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+                });
+            }
+            
+            // Escape key to close modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const openModal = document.querySelector('.modal-overlay.active');
+                    if (openModal) {
+                        closeModal(openModal);
+                    }
+                }
+            });
+            
+            // Navigation active state
+            const currentPath = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        document.getElementById('saveAvailabilityBtn').addEventListener('click', async () => {
+    // 🔹 Make sure these IDs match your HTML
+    const dayInput   = document.getElementById('daySelect');   // e.g. <select id="daySelect">
+    const startInput = document.getElementById('startTime');   // e.g. <input id="startTime" type="time">
+    const endInput   = document.getElementById('endTime');     // e.g. <input id="endTime" type="time">
+
+    const dayOfWeek = dayInput ? dayInput.value : '';
+    const startTime = startInput ? startInput.value : '';
+    const endTime   = endInput ? endInput.value : '';
+
+    console.log('Day:', dayOfWeek, 'Start:', startTime, 'End:', endTime);
+
+    if (!dayOfWeek || !startTime || !endTime) {
+        alert('Please select day, start time, and end time.');
+        return;
+    }
+
+    // We'll send as URL-encoded form data
+    const body = new URLSearchParams();
+    body.append('day_of_week', dayOfWeek);           // 👈 matches PHP: $_POST['day_of_week']
+    body.append('start_time',  startTime);           // 👈 matches PHP: $_POST['start_time']
+    body.append('end_time',    endTime);            // 👈 matches PHP: $_POST['end_time']
+
+    try {
+        const res = await fetch('api/tutors/set_availability.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body.toString(),
+            credentials: 'include'                   // ✅ keep session cookie
+        });
+
+        const data = await res.json();
+        console.log('set_availability response:', data);
+
+        if (data.success) {
+            alert('Availability saved ✅');
+            // TODO: refresh list of availability slots if you want
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Network error while saving availability');
+    }
+});
+
+        
+    </script>
+</body>
+</html>

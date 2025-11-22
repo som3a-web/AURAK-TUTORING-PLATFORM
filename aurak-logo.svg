@@ -1,0 +1,20 @@
+<svg width="260" height="260" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <circle id="outer" cx="130" cy="130" r="118"/>
+    <path id="topTextPath" d="M34 130a96 96 0 0 1 192 0" />
+    <path id="bottomTextPath" d="M34 130a96 96 0 0 0 192 0" />
+  </defs>
+  <circle cx="130" cy="130" r="128" fill="#c8102e"/>
+  <circle cx="130" cy="130" r="118" fill="#ffffff" stroke="#c8102e" stroke-width="4"/>
+  <circle cx="130" cy="130" r="106" fill="#c8102e" stroke="#d6af36" stroke-width="6"/>
+  <circle cx="130" cy="130" r="92" fill="#c8102e"/>
+  <path d="M130 62c-14 18-20 35-20 53 0 5 0 10 2 15-7-8-12-18-12-28 0-4 1-7 1-11-11 17-16 32-16 45 0 18 9 32 26 40v58h58v-58c17-8 26-22 26-40 0-13-5-28-16-45 1 4 1 7 1 11 0 10-5 20-12 28 1-5 2-10 2-15 0-18-6-35-20-53l-5-5-5 5z" fill="#ffffff"/>
+  <rect x="112" y="198" width="36" height="32" fill="#ffffff" rx="6"/>
+  <text fill="#c8102e" font-family="'Noto Sans Arabic','Reem Kufi',sans-serif" font-size="16" font-weight="600">
+    <textPath href="#topTextPath" startOffset="50%" text-anchor="middle">الجامعة الأمريكية في رأس الخيمة</textPath>
+  </text>
+  <text fill="#c8102e" font-family="'Inter','Arial',sans-serif" font-size="14" font-weight="600">
+    <textPath href="#bottomTextPath" startOffset="50%" text-anchor="middle">AMERICAN UNIVERSITY OF RAS AL KHAIMAH</textPath>
+  </text>
+</svg>
+

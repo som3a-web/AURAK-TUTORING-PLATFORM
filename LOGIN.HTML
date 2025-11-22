@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - AURAK Peer Tutoring</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #C8102E;
+            --accent-yellow: #FFC72C;
+            --white: #FFFFFF;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --text-dark: #212529;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success-green: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-red);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #a00d24 100%);
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .login-wrapper {
+            z-index: 10;
+            padding: 20px;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .logo-small {
+            width: 55px;
+            height: 55px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--white);
+            overflow: hidden;
+            padding: 1px;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .logo-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: auto;
+            filter: contrast(1.15) brightness(1.03) saturate(1.05) drop-shadow(0 0 0.5px rgba(0,0,0,0.1));
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transform: scale(1) translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            outline: none;
+            border: none;
+            -webkit-filter: contrast(1.15) brightness(1.03) saturate(1.05);
+            -ms-filter: contrast(1.15) brightness(1.03) saturate(1.05);
+        }
+
+        .logo-text {
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-container {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-container.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, #a00d24 100%);
+            color: white;
+            padding: 30px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .login-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .login-header .badge-note {
+            margin-top: 10px;
+            font-size: 12px;
+            opacity: 0.9;
+            display: none;
+            position: relative;
+        }
+
+        .login-container.register-mode .login-header .badge-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .login-header .badge-pill {
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(255, 199, 44, 0.2);
+            border: 1px solid rgba(255, 199, 44, 0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+        }
+
+        .role-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--medium-gray);
+            background: var(--light-gray);
+            position: relative;
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 18px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--dark-gray);
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .role-tab:hover:not(.active) {
+            background: rgba(200, 16, 46, 0.03);
+            color: var(--text-dark);
+        }
+
+        .role-tab.active {
+            color: var(--primary-red);
+            background: rgba(200, 16, 46, 0.08);
+        }
+
+        .role-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: var(--primary-red);
+            transition: var(--transition);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .login-container.register-mode .role-tab[data-role="tutor"],
+        .login-container.register-mode .role-tab[data-role="admin"] {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .login-container.register-mode .role-tab[data-role="student"] {
+            cursor: default;
+        }
+
+        .form-container {
+            padding: 35px;
+        }
+
+        .auth-form {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            transition: margin-bottom 0.3s ease;
+        }
+
+        .form-group.register-only.hidden-field {
+            opacity: 0;
+            height: 0;
+            margin-bottom: 0;
+            pointer-events: none;
+            transition: all 0.3s ease-out;
+        }
+
+        .login-container.register-mode .form-group.register-only.hidden-field {
+            opacity: 1;
+            height: 55px;
+            margin-bottom: 25px;
+            pointer-events: auto;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 16px 10px 48px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            background: var(--white);
+            transition: var(--transition);
+            outline: none;
+            height: 55px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+            font-size: 18px;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .form-input:focus ~ .input-icon {
+            color: var(--primary-red);
+        }
+
+        .form-label {
+            position: absolute;
+            left: 48px;
+            top: 18px;
+            color: var(--dark-gray);
+            pointer-events: none;
+            transition: var(--transition);
+            background: none;
+            font-size: 16px;
+        }
+
+        .form-input:focus ~ .form-label,
+        .form-input:not(:placeholder-shown) ~ .form-label {
+            top: 4px;
+            left: 45px;
+            font-size: 12px;
+            color: var(--primary-red);
+            font-weight: 600;
+            padding: 0 3px;
+            background: var(--card-bg);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--dark-gray);
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-red);
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            font-size: 14px;
+            color: var(--dark-gray);
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .forgot-password.hidden {
+            display: none;
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-red);
+            text-decoration: underline;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .auth-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+
+        .auth-btn.login-btn {
+            background: linear-gradient(135deg, var(--primary-red) 0%, #a00d24 100%);
+            box-shadow: 0 5px 20px rgba(200, 16, 46, 0.4);
+        }
+
+        .auth-btn.login-btn:hover {
+            background: linear-gradient(135deg, #a00d24 0%, var(--primary-red) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(200, 16, 46, 0.6);
+        }
+
+        .auth-btn.register-btn {
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #e6b325 100%);
+            color: var(--text-dark);
+            box-shadow: 0 5px 20px rgba(255, 199, 44, 0.6);
+        }
+
+        .auth-btn.register-btn:hover {
+            background: linear-gradient(135deg, #e6b325 0%, var(--accent-yellow) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 199, 44, 0.8);
+        }
+
+        .mode-toggle {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 15px;
+        }
+
+        .mode-toggle-link {
+            color: var(--primary-red);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .mode-toggle-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-red);
+            transition: width 0.3s ease;
+        }
+
+        .mode-toggle-link:hover::after {
+            width: 100%;
+        }
+
+        .hint-text {
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--dark-gray);
+            text-align: center;
+            display: none;
+            line-height: 1.5;
+            padding: 12px;
+            background: rgba(255, 199, 44, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-yellow);
+        }
+
+        .hint-text.visible {
+            display: block;
+        }
+
+        .error-message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(200, 16, 46, 0.08);
+            color: var(--primary-red);
+            border: 1px solid rgba(200, 16, 46, 0.3);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+
+        .error-message.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success-message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(40, 167, 69, 0.08);
+            color: var(--success-green);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+
+        .success-message.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+            }
+            .form-container {
+                padding: 25px;
+            }
+            .role-tab {
+                padding: 14px 10px;
+                font-size: 14px;
+            }
+            .logo-small {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            .logo-text {
+                font-size: 20px;
+            }
+        }
+
+        /* Enhanced Floating Elements */
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0.7;
+            filter: blur(1px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff6b6b 100%);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+            animation-duration: 25s;
+        }
+
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #ffd93d 100%);
+            top: 70%;
+            left: 80%;
+            animation-delay: -5s;
+            animation-duration: 30s;
+        }
+
+        .shape-3 {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff9a9e 100%);
+            top: 40%;
+            left: 85%;
+            animation-delay: -10s;
+            animation-duration: 35s;
+        }
+
+        .shape-4 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #ffe066 100%);
+            top: 80%;
+            left: 15%;
+            animation-delay: -7s;
+            animation-duration: 20s;
+        }
+
+        .shape-5 {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff7676 100%);
+            top: 20%;
+            left: 70%;
+            animation-delay: -12s;
+            animation-duration: 28s;
+        }
+
+        .shape-6 {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #ffcc5c 100%);
+            top: 60%;
+            left: 10%;
+            animation-delay: -15s;
+            animation-duration: 32s;
+        }
+
+        .shape-7 {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, #ff8a8a 100%);
+            top: 30%;
+            left: 40%;
+            animation-delay: -18s;
+            animation-duration: 26s;
+        }
+
+        .shape-8 {
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #ffdd67 100%);
+            top: 5%;
+            left: 60%;
+            animation-delay: -22s;
+            animation-duration: 40s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            20% {
+                transform: translate(30px, -50px) rotate(72deg) scale(1.1);
+            }
+            40% {
+                transform: translate(-20px, 20px) rotate(144deg) scale(0.9);
+            }
+            60% {
+                transform: translate(40px, 30px) rotate(216deg) scale(1.05);
+            }
+            80% {
+                transform: translate(-30px, -40px) rotate(288deg) scale(0.95);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg) scale(1);
+            }
+        }
+
+        /* Add floating icons */
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .floating-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 24px;
+            animation: float-icon 15s infinite linear;
+        }
+
+        .floating-icon-1 {
+            top: 15%;
+            left: 20%;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+
+        .floating-icon-2 {
+            top: 65%;
+            left: 75%;
+            animation-delay: -3s;
+            animation-duration: 22s;
+        }
+
+        .floating-icon-3 {
+            top: 35%;
+            left: 90%;
+            animation-delay: -7s;
+            animation-duration: 25s;
+        }
+
+        .floating-icon-4 {
+            top: 85%;
+            left: 25%;
+            animation-delay: -10s;
+            animation-duration: 20s;
+        }
+
+        .floating-icon-5 {
+            top: 25%;
+            left: 65%;
+            animation-delay: -13s;
+            animation-duration: 17s;
+        }
+
+        @keyframes float-icon {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(40px, -30px) rotate(90deg);
+            }
+            50% {
+                transform: translate(-20px, 40px) rotate(180deg);
+            }
+            75% {
+                transform: translate(30px, 20px) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+        <div class="shape shape-7"></div>
+        <div class="shape shape-8"></div>
+    </div>
+    
+    <div class="floating-icons">
+        <div class="floating-icon floating-icon-1"><i class="fas fa-graduation-cap"></i></div>
+        <div class="floating-icon floating-icon-2"><i class="fas fa-book"></i></div>
+        <div class="floating-icon floating-icon-3"><i class="fas fa-user-graduate"></i></div>
+        <div class="floating-icon floating-icon-4"><i class="fas fa-chalkboard-teacher"></i></div>
+        <div class="floating-icon floating-icon-5"><i class="fas fa-university"></i></div>
+    </div>
+    
+    <div class="login-wrapper">
+        <div class="logo-container">
+            <div class="logo-small">
+                <img src="image.html/image6-adjusted.png" alt="AURAK Logo">
+            </div>
+            <div class="logo-text">AURAK Tutoring</div>
+        </div>
+
+        <div class="login-container" id="loginCard">
+            <div class="login-header">
+                <h2 id="card-header-title">Welcome Back</h2>
+                <p id="card-header-subtitle">Sign in to access your account</p>
+                <p class="badge-note">
+                    <span class="badge-pill"><i class="fas fa-user-graduate"></i> Student sign-up only</span>
+                </p>
+            </div>
+
+            <div class="role-tabs">
+                <button class="role-tab active" data-role="student">
+                    <i class="fas fa-user-graduate"></i> Student
+                </button>
+                <button class="role-tab" data-role="tutor">
+                    <i class="fas fa-chalkboard-teacher"></i> Tutor
+                </button>
+                <button class="role-tab" data-role="admin">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+            </div>
+
+            <div class="form-container" id="formContainer">
+                <div class="error-message" id="loginError">
+                    <i class="fas fa-exclamation-triangle"></i> Invalid credentials or account type. Please verify and try again.
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Registration successful! You can sign in now.
+                </div>
+
+                <form class="auth-form" id="auth-form">
+                    <!-- Full Name (Registration Only) -->
+                    <div class="form-group register-only hidden-field" id="fullNameGroup">
+                        <input type="text" id="auth-fullname" class="form-input" placeholder=" ">
+                        <i class="fas fa-id-card input-icon"></i>
+                        <label for="auth-fullname" class="form-label">Full Name</label>
+                    </div>
+
+                    <!-- Email/ID Input -->
+                    <div class="form-group">
+                        <input type="text" id="auth-email" class="form-input" placeholder=" " required>
+                        <i class="fas fa-envelope input-icon"></i>
+                        <label for="auth-email" class="form-label" id="email-label">AURAK Email / Student ID</label>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-group">
+                        <input type="password" id="auth-password" class="form-input password-field" placeholder=" " required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <label for="auth-password" class="form-label">Password</label>
+                        <i class="fas fa-eye-slash password-toggle" data-target="auth-password"></i>
+                    </div>
+
+                    <!-- Confirm Password (Registration Only) -->
+                    <div class="form-group register-only hidden-field" id="confirmPasswordGroup">
+                        <input type="password" id="auth-password-confirm" class="form-input password-field" placeholder=" ">
+                        <i class="fas fa-check-circle input-icon"></i>
+                        <label for="auth-password-confirm" class="form-label">Confirm Password</label>
+                        <i class="fas fa-eye-slash password-toggle" data-target="auth-password-confirm"></i>
+                    </div>
+
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    <button type="submit" class="auth-btn login-btn" id="submit-button">Sign In</button>
+                </form>
+
+                <p class="hint-text" id="register-hint">
+                    You are creating a <strong>student account</strong>.  
+                    To become a tutor later, apply from the dashboard using the <em>Become a Tutor</em> button.
+                </p>
+
+                <div class="mode-toggle">
+                    <p id="mode-toggle-text">
+                        Don't have an account? <a class="mode-toggle-link" data-target-mode="register">Sign Up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Base path auto-detect (works even if you move the folder) ---
+        const base = (function () {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            // e.g., /SE.PROJECT/login.html -> "SE.PROJECT"
+            return parts.length ? `/${parts[0]}` : '';
+        })();
+
+        const loginCard = document.getElementById('loginCard');
+        const roleTabs = document.querySelectorAll('.role-tab');
+        const authForm = document.getElementById('auth-form');
+        const loginError = document.getElementById('loginError');
+        const successMessage = document.getElementById('successMessage');
+        const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+        const fullNameGroup = document.getElementById('fullNameGroup');
+        const submitButton = document.getElementById('submit-button');
+        const forgotPasswordLink = document.querySelector('.forgot-password');
+        const emailLabel = document.getElementById('email-label');
+        const cardHeaderTitle = document.getElementById('card-header-title');
+        const cardHeaderSubtitle = document.getElementById('card-header-subtitle');
+        const registerHint = document.getElementById('register-hint');
+
+        let isRegisterMode = false;
+
+        setTimeout(() => {
+            loginCard.classList.add('loaded');
+            authForm.classList.add('active');
+        }, 50);
+
+        function setLoading(on) {
+            submitButton.disabled = on;
+            submitButton.style.opacity = on ? '0.7' : '1';
+            submitButton.style.cursor = on ? 'not-allowed' : 'pointer';
+            
+            if (on) {
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            } else {
+                if (isRegisterMode) {
+                    submitButton.innerHTML = 'Create Student Account';
+                } else {
+                    submitButton.innerHTML = 'Sign In';
+                }
+            }
+        }
+
+        function updateRoleLabel(role) {
+            if (isRegisterMode) {
+                // Sign up is always student
+                emailLabel.textContent = 'AURAK Student Email';
+            } else {
+                if (role === 'admin') {
+                    emailLabel.textContent = 'Admin Email / Username';
+                } else if (role === 'tutor') {
+                    emailLabel.textContent = 'Tutor Email';
+                } else {
+                    emailLabel.textContent = 'AURAK Email / Student ID';
+                }
+            }
+        }
+
+        function attachModeToggleListener() {
+            // Remove previous listeners by cloning
+            document.querySelectorAll('.mode-toggle-link').forEach(link => {
+                const clone = link.cloneNode(true);
+                link.parentNode.replaceChild(clone, link);
+            });
+
+            document.querySelector('.mode-toggle-link').addEventListener('click', function (e) {
+                e.preventDefault();
+                updateMode(this.getAttribute('data-target-mode'));
+            });
+        }
+
+        function updateMode(mode) {
+            const wasRegisterMode = isRegisterMode;
+            isRegisterMode = (mode === 'register');
+
+            loginCard.classList.toggle('register-mode', isRegisterMode);
+
+            // Toggle registration-only fields
+            confirmPasswordGroup.classList.toggle('hidden-field', !isRegisterMode);
+            fullNameGroup.classList.toggle('hidden-field', !isRegisterMode);
+            fullNameGroup.querySelector('input').required = isRegisterMode;
+            confirmPasswordGroup.querySelector('input').required = isRegisterMode;
+
+            // Toggle Forgot Password
+            forgotPasswordLink.classList.toggle('hidden', isRegisterMode);
+
+            // Header + button + hint
+            if (isRegisterMode) {
+                cardHeaderTitle.textContent = 'Join AURAK Tutoring';
+                cardHeaderSubtitle.textContent = 'Create your student account to get started';
+                submitButton.textContent = 'Create Student Account';
+                submitButton.classList.remove('login-btn');
+                submitButton.classList.add('register-btn');
+                document.querySelector('.mode-toggle p').innerHTML =
+                    `Already have an account? <a class="mode-toggle-link" data-target-mode="login">Sign In</a>`;
+                registerHint.classList.add('visible');
+
+                // Force Student tab active when registering
+                roleTabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('.role-tab[data-role="student"]').classList.add('active');
+            } else {
+                cardHeaderTitle.textContent = 'Welcome Back';
+                cardHeaderSubtitle.textContent = 'Sign in to access your account';
+                submitButton.textContent = 'Sign In';
+                submitButton.classList.remove('register-btn');
+                submitButton.classList.add('login-btn');
+                document.querySelector('.mode-toggle p').innerHTML =
+                    `Don't have an account? <a class="mode-toggle-link" data-target-mode="register">Sign Up</a>`;
+                registerHint.classList.remove('visible');
+            }
+
+            if (isRegisterMode !== wasRegisterMode) {
+                loginError.classList.remove('active');
+                successMessage.classList.remove('active');
+                authForm.reset();
+            }
+
+            const activeRole = document.querySelector('.role-tab.active').getAttribute('data-role');
+            updateRoleLabel(activeRole);
+            attachModeToggleListener();
+        }
+
+        // Role tab click (login only)
+        roleTabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                if (isRegisterMode) {
+                    // In sign-up mode, we don't allow switching away from Student
+                    return;
+                }
+                roleTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                updateRoleLabel(this.getAttribute('data-role'));
+                loginError.classList.remove('active');
+            });
+        });
+
+        // Password show/hide
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const targetInput = document.getElementById(targetId);
+                const type = targetInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                targetInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+
+        // ---- SUBMIT (talks to PHP) ----
+        authForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            loginError.classList.remove('active');
+            successMessage.classList.remove('active');
+
+            const activeRole = document.querySelector('.role-tab.active').getAttribute('data-role');
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+
+            try {
+                setLoading(true);
+
+                if (isRegisterMode) {
+                    // SIGN UP: always student role
+                    const confirmPassword = document.getElementById('auth-password-confirm').value;
+                    if (password !== confirmPassword) return showError('Passwords do not match.');
+                    const full_name = document.getElementById('auth-fullname').value.trim();
+                    if (!full_name) return showError('Please enter your full name.');
+
+                    const res = await fetch(`${base}/api/auth/register.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            full_name,
+                            email,
+                            password,
+                            role: 'student'
+                        }),
+                        credentials: 'include'
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && (data.ok || data.success)) {
+                        showSuccess('Registration successful! You can sign in now.');
+                        updateMode('login');
+                    } else {
+                        showError(data.error || data.message || 'Registration failed.');
+                    }
+                  } else {
+                    // LOGIN: role matters here (student / tutor / admin)
+                    const res = await fetch(`${base}/api/auth/login.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password, role: activeRole }),
+                        credentials: 'include'
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && (data.ok || data.success)) {
+                        if (data.token) localStorage.setItem('authToken', data.token);
+                        if (data.user)  localStorage.setItem('aurak_user', JSON.stringify(data.user));
+                        showSuccess('Login successful! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = `${base}/dashboard.html`;
+                        }, 1500);
+                    } else {
+                        showError(data.error || data.message || 'Invalid credentials or account type.');
+                    }
+                }
+
+            } catch (err) {
+                console.error(err);
+                showError('Network error. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        function showError(msg) {
+            loginError.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${msg}`;
+            loginError.classList.add('active');
+        }
+
+        function showSuccess(msg) {
+            successMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+            successMessage.classList.add('active');
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        updateMode(urlParams.get('mode') === 'register' ? 'register' : 'login');
+    });
+    </script>
+</body>
+</html>

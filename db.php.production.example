@@ -1,0 +1,38 @@
+<?php
+// config/db.php - PRODUCTION TEMPLATE
+// Copy this file to db.php and update with your production credentials
+
+// Hide errors in production
+ini_set('display_errors', 0);
+error_reporting(0);
+
+// PRODUCTION DATABASE CREDENTIALS
+// Get these from your hosting provider's cPanel or control panel
+$host    = 'localhost';  // Usually 'localhost' on shared hosting, or provided by host
+$db      = 'your_production_db_name';  // Database name from hosting provider
+$user    = 'your_production_db_user';  // Database username from hosting provider
+$pass    = 'your_production_db_password';  // Database password from hosting provider
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (PDOException $e) {
+    // Log error but don't expose details to users
+    error_log('Database connection failed: ' . $e->getMessage());
+    http_response_code(500);
+    die('Database connection failed. Please contact support at tutoring@aurak.ac.ae');
+}
+
+function getPDO() {
+    global $pdo;
+    return $pdo;
+}
+
