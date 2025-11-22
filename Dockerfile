@@ -12,6 +12,10 @@ RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mysqli
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
+# Configure Apache to use homepage.html as index
+RUN echo "DirectoryIndex homepage.html index.html index.php" > /etc/apache2/conf-available/homepage.conf && \
+    a2enconf homepage
+
 # Copy files to web directory
 COPY . /var/www/html/
 
