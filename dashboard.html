@@ -1662,7 +1662,8 @@
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
                 localStorage.removeItem('aurak_user');
-                location.href = '/SE.PROJECT/login.html';
+                const loginPath = window.location.hostname.includes('render.com') ? '/LOGIN.HTML' : '/SE.PROJECT/LOGIN.HTML';
+                location.href = loginPath;
             });
         }
 
@@ -1711,7 +1712,8 @@
             };
 
             try {
-                const response = await fetch('/SE.PROJECT/api/user/apply_tutor.php', {
+                const apiBase = window.location.hostname.includes('render.com') ? '/api' : '/SE.PROJECT/api';
+                const response = await fetch(`${apiBase}/user/apply_tutor.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(applicationData)
@@ -3354,8 +3356,8 @@ async function handleSessionRequestSubmit(e) {
         }
 
         const DashboardAPI = {
-            // Base URL for API endpoints
-            baseURL: '/SE.PROJECT/api',
+            // Base URL for API endpoints - auto-detect environment
+            baseURL: window.location.hostname.includes('render.com') ? '/api' : '/SE.PROJECT/api',
             
             // Helper function to get auth headers
             getAuthHeaders() {
@@ -3546,7 +3548,7 @@ async function handleSessionRequestSubmit(e) {
                      body.classList.remove('dark');
                 }
                 
-                const base = '/SE.PROJECT';
+                const base = window.location.hostname.includes('render.com') ? '' : '/SE.PROJECT';
 
                 if (raw) {
                     try {
@@ -3617,8 +3619,9 @@ async function handleSessionRequestSubmit(e) {
                     }
                 } else {
                     // Not logged in, redirect (handled by other code, but safe to check)
-                    const base = '/SE.PROJECT';
-                    if (location.pathname.toLowerCase().includes('dashboard')) { location.href = `${base}/login.html`; }
+                    const base = window.location.hostname.includes('render.com') ? '' : '/SE.PROJECT';
+                    const loginPath = window.location.hostname.includes('render.com') ? '/LOGIN.HTML' : `${base}/LOGIN.HTML`;
+                    if (location.pathname.toLowerCase().includes('dashboard')) { location.href = loginPath; }
                 }
 
                 // 4. Continue loading dashboard data only if the Student view is active

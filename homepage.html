@@ -1741,7 +1741,8 @@
 
     <script>
         // Global variables for the PHP path and course options
-        const BASE_API_URL = '/SE.PROJECT/api';
+        // Use relative path for Render deployment
+        const BASE_API_URL = window.location.hostname.includes('render.com') ? '/api' : '/SE.PROJECT/api';
         const COURSE_OPTIONS = `
             <option value="">Select course...</option>
             <option value="CSIT111">CSIT111 - Intro to Programming</option>
